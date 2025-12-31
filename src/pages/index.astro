@@ -1,0 +1,37 @@
+---
+import "../styles/global.css";
+
+interface Props {
+    title?: string;
+}
+import Hero from "../components/Index/hero.astro";
+import Navbar from "../components/Index/navbar.astro";
+import Techs from "../components/Index/Techs.astro";
+import Proyects from "../components/Index/proyects.astro";
+import AboutMe from "../components/Index/aboutme.astro";
+import Contact from "../components/Index/contact.astro";
+const { title = "Graphics Portfolio" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="description"
+            content="Portfolio profesional de programador gráfico y de videojuegos"
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+    </head>
+    <body class="bg-gray-50">
+        <Hero />
+        <Navbar />
+        <Techs />
+        <Proyects />
+        <AboutMe />
+        <Contact />
+    </body>
+</html>

@@ -1,0 +1,195 @@
+---
+
+---
+
+<!-- Navbar que está debajo del hero y se pega arriba al hacer scroll -->
+<nav id="navbar" class="sticky top-0 z-50 w-full">
+    <!-- Container para los dos navbars -->
+    <div class="relative">
+        <!-- Navbar normal (cuando NO está pegado) -->
+        <div
+            id="navbar-normal"
+            class="flex h-20 items-center justify-center transition-all duration-300 ease-out"
+        >
+            <div class="flex gap-12">
+                <a
+                    href="#projects"
+                    class="flex flex-col items-center text-gray-800 hover:text-purple-500 transition-colors group"
+                >
+                    <svg
+                        class="w-6 h-6 mb-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                        ></path>
+                    </svg>
+                    <span class="text-xs font-medium">Projects</span>
+                </a>
+                <a
+                    href="#aboutme"
+                    class="flex flex-col items-center text-gray-800 hover:text-purple-500 transition-colors group"
+                >
+                    <svg
+                        class="w-6 h-6 mb-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        ></path>
+                    </svg>
+                    <span class="text-xs font-medium">About Me</span>
+                </a>
+                <a
+                    href="#contact"
+                    class="flex flex-col items-center text-gray-800 hover:text-purple-500 transition-colors group"
+                >
+                    <svg
+                        class="w-6 h-6 mb-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        ></path>
+                    </svg>
+                    <span class="text-xs font-medium">Contact</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Navbar compacto (cuando ESTÁ pegado arriba) - posición absoluta encima -->
+        <div
+            id="navbar-stuck"
+            class="absolute top-0 left-0 right-0 flex h-16 items-center justify-center transition-all duration-300 ease-out opacity-0 pointer-events-none my-2"
+        >
+            <div
+                class="flex gap-10 bg-white/35 backdrop-blur-lg rounded-full px-8 py-2 border border-white/10"
+            >
+                <a
+                    href="#hero"
+                    class="flex flex-col items-center text-gray-800 hover:text-purple-500 transition-colors"
+                >
+                    <svg
+                        class="w-5 h-5 mb-0.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                        ></path>
+                    </svg>
+                    <span class="text-[10px] font-medium">Home</span>
+                </a>
+                <a
+                    href="#projects"
+                    class="flex flex-col items-center text-gray-800 hover:text-purple-500 transition-colors"
+                >
+                    <svg
+                        class="w-5 h-5 mb-0.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                        ></path>
+                    </svg>
+                    <span class="text-[10px] font-medium">Projects</span>
+                </a>
+                <a
+                    href="#aboutme"
+                    class="flex flex-col items-center text-gray-800 hover:text-purple-500 transition-colors"
+                >
+                    <svg
+                        class="w-5 h-5 mb-0.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        ></path>
+                    </svg>
+                    <span class="text-[10px] font-medium">About</span>
+                </a>
+                <a
+                    href="#contact"
+                    class="flex flex-col items-center text-gray-800 hover:text-purple-500 transition-colors"
+                >
+                    <svg
+                        class="w-5 h-5 mb-0.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        ></path>
+                    </svg>
+                    <span class="text-[10px] font-medium">Contact</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    const navbar = document.getElementById("navbar");
+    const navbarNormal = document.getElementById("navbar-normal");
+    const navbarStuck = document.getElementById("navbar-stuck");
+
+    let isStuck = false;
+
+    function checkIfStuck() {
+        if (!navbar) return;
+
+        // El navbar está "stuck" cuando su posición top es 0 (pegado arriba)
+        const rect = navbar.getBoundingClientRect();
+        const shouldBeStuck = rect.top <= 0;
+
+        if (shouldBeStuck && !isStuck) {
+            isStuck = true;
+            // Fade out normal, fade in stuck
+            navbarNormal?.classList.add("opacity-0");
+            navbarStuck?.classList.remove("opacity-0", "pointer-events-none");
+            navbarStuck?.classList.add("opacity-100", "pointer-events-auto");
+        } else if (!shouldBeStuck && isStuck) {
+            isStuck = false;
+            // Fade out stuck, fade in normal
+            navbarStuck?.classList.remove("opacity-100", "pointer-events-auto");
+            navbarStuck?.classList.add("opacity-0", "pointer-events-none");
+            navbarNormal?.classList.remove("opacity-0");
+        }
+    }
+
+    window.addEventListener("scroll", checkIfStuck);
+    window.addEventListener("load", checkIfStuck);
+</script>
