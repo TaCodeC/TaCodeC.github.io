@@ -1,0 +1,6 @@
+<svg role="img" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <title>HLSL</title>
+  <rect width="64" height="64" rx="14" fill="#171717"/>
+  <path d="M15 18h34v28H15z" fill="#0B0B0B" stroke="#5EEAD4" stroke-width="3"/>
+  <path d="M21 26h5v12h-5v-4h-4v4h-5V26h5v4h4v-4Zm8 0h5v8h6v4H29V26Zm14 0h5v12h-5V26Z" fill="#F4F4F5"/>
+</svg>
