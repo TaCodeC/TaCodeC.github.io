@@ -1,0 +1,27 @@
+---
+import '../styles/global.css';
+
+const {
+  title = 'Fernando Cortés - Technical Artist',
+  description = 'Portafolio de Fernando Cortes: arte tecnico, shaders, Unity, OpenGL, modelado y experiencias interactivas.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#101113" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

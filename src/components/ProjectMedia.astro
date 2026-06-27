@@ -1,0 +1,246 @@
+---
+const { media } = Astro.props;
+const zoomLabel = 'Doble click para zoom';
+const windowLabel = 'Abrir en ventana';
+const hasMixedCarouselThumbnails =
+  media?.type === 'carousel' && media.slides.length > 1 && media.slides.some((slide) => slide.type === 'video');
+---
+
+{
+  media?.type === 'image' && (
+    <figure class="project-media project-media-single" data-media-zoom-target>
+      <img src={media.src} alt={media.alt} loading="lazy" decoding="async" />
+      {media.caption && <figcaption>{media.caption}</figcaption>}
+      <span class="media-zoom-label">{zoomLabel}</span>
+      <button class="media-window-button" type="button" aria-label={windowLabel} data-open-lightbox data-lightbox-src={media.src} data-lightbox-type="image" data-lightbox-alt={media.alt}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 10V4h6v2H6v4H4Zm14 0V6h-4V4h6v6h-2ZM4 14h2v4h4v2H4v-6Zm14 4v-4h2v6h-6v-2h4Z"></path>
+        </svg>
+      </button>
+    </figure>
+  )
+}
+
+{
+  media?.type === 'video' && (
+    <figure class="project-media project-video-frame" data-media-zoom-target>
+      <video
+        src={media.src}
+        poster={media.poster}
+        controls
+        playsinline
+        preload="metadata"
+        aria-label={media.alt}
+      ></video>
+      {media.caption && <figcaption>{media.caption}</figcaption>}
+      <span class="media-zoom-label">{zoomLabel}</span>
+      <button class="media-window-button" type="button" aria-label={windowLabel} data-open-lightbox data-lightbox-src={media.src} data-lightbox-type="video" data-lightbox-alt={media.alt}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 10V4h6v2H6v4H4Zm14 0V6h-4V4h6v6h-2ZM4 14h2v4h4v2H4v-6Zm14 4v-4h2v6h-6v-2h4Z"></path>
+        </svg>
+      </button>
+    </figure>
+  )
+}
+
+{
+  media?.type === 'gallery' && (
+    <div class={`project-media media-gallery media-gallery-${media.layout || 'grid'}`}>
+      {media.images.map((image) => (
+        <figure class="media-gallery-item" data-media-zoom-target>
+          <img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+          <figcaption>{image.caption}</figcaption>
+          <span class="media-zoom-label">{zoomLabel}</span>
+          <button class="media-window-button" type="button" aria-label={windowLabel} data-open-lightbox data-lightbox-src={image.src} data-lightbox-type="image" data-lightbox-alt={image.alt}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 10V4h6v2H6v4H4Zm14 0V6h-4V4h6v6h-2ZM4 14h2v4h4v2H4v-6Zm14 4v-4h2v6h-6v-2h4Z"></path>
+            </svg>
+          </button>
+        </figure>
+      ))}
+    </div>
+  )
+}
+
+{
+  media?.type === 'carouselSet' && (
+    <div class="project-media media-carousel-set">
+      {media.groups.map((group) => (
+        <div class="media-carousel media-carousel-nested" data-carousel aria-label={`Carrusel ${group.title}`}>
+          <div class="media-carousel-viewport">
+            {group.slides.map((slide, index) => (
+              <figure
+                class={`media-carousel-slide ${index === 0 ? 'is-active' : ''}`}
+                data-carousel-slide
+                data-media-zoom-target
+              >
+                <img src={slide.src} alt={slide.alt} loading="lazy" decoding="async" />
+                <figcaption>{slide.caption}</figcaption>
+                <span class="media-zoom-label">{zoomLabel}</span>
+                <button class="media-window-button" type="button" aria-label={windowLabel} data-open-lightbox data-lightbox-src={slide.src} data-lightbox-type="image" data-lightbox-alt={slide.alt}>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 10V4h6v2H6v4H4Zm14 0V6h-4V4h6v6h-2ZM4 14h2v4h4v2H4v-6Zm14 4v-4h2v6h-6v-2h4Z"></path>
+                  </svg>
+                </button>
+              </figure>
+            ))}
+          </div>
+          <div class="media-carousel-controls" aria-label={`Controles de ${group.title}`}>
+            <button type="button" data-carousel-prev aria-label={`Anterior ${group.title}`}>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M15.5 4.5 8 12l7.5 7.5 1.4-1.4-6.1-6.1 6.1-6.1-1.4-1.4Z"></path>
+              </svg>
+            </button>
+            <div class="media-carousel-dots">
+              {group.slides.map((_, index) => (
+                <button
+                  class={index === 0 ? 'is-active' : ''}
+                  type="button"
+                  data-carousel-dot
+                  aria-label={`Ir a ${group.title} imagen ${index + 1}`}
+                ></button>
+              ))}
+            </div>
+            <button type="button" data-carousel-next aria-label={`Siguiente ${group.title}`}>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8.5 19.5 16 12 8.5 4.5 7.1 5.9l6.1 6.1-6.1 6.1 1.4 1.4Z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+{
+  media?.type === 'carousel' && (
+    <div class="project-media media-carousel" data-carousel>
+      <div class="media-carousel-viewport">
+        {media.slides.map((slide, index) => (
+          <figure
+            class={`media-carousel-slide ${index === 0 ? 'is-active' : ''}`}
+            data-carousel-slide
+            data-media-zoom-target
+          >
+            {slide.type === 'video' ? (
+              <video
+                src={slide.src}
+                poster={slide.poster}
+                controls
+                playsinline
+                preload="metadata"
+                aria-label={slide.alt}
+              ></video>
+            ) : (
+              <img src={slide.src} alt={slide.alt} loading="lazy" decoding="async" />
+            )}
+            <figcaption>{slide.caption}</figcaption>
+            <span class="media-zoom-label">{zoomLabel}</span>
+            <button class="media-window-button" type="button" aria-label={windowLabel} data-open-lightbox data-lightbox-src={slide.src} data-lightbox-type={slide.type} data-lightbox-alt={slide.alt}>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 10V4h6v2H6v4H4Zm14 0V6h-4V4h6v6h-2ZM4 14h2v4h4v2H4v-6Zm14 4v-4h2v6h-6v-2h4Z"></path>
+              </svg>
+            </button>
+          </figure>
+        ))}
+      </div>
+      {hasMixedCarouselThumbnails && (
+        <div class="media-carousel-thumbnails" aria-label="Miniaturas del carrusel">
+          {media.slides.map((slide, index) => (
+            <button
+              class={`media-carousel-thumbnail ${index === 0 ? 'is-active' : ''}`}
+              type="button"
+              data-carousel-thumb
+              aria-label={`Ver ${slide.caption || `media ${index + 1}`}`}
+            >
+              {slide.type === 'video' ? (
+                <>
+                  <img src={slide.poster} alt="" loading="lazy" decoding="async" />
+                  <span class="media-carousel-thumbnail-video" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path d="m9 7 8 5-8 5V7Z"></path>
+                    </svg>
+                  </span>
+                </>
+              ) : (
+                <img src={slide.src} alt="" loading="lazy" decoding="async" />
+              )}
+              <span class="media-carousel-thumbnail-label">{String(index + 1).padStart(2, '0')}</span>
+            </button>
+          ))}
+        </div>
+      )}
+      <div class="media-carousel-controls" aria-label="Controles del carrusel">
+        <button type="button" data-carousel-prev aria-label="Anterior">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15.5 4.5 8 12l7.5 7.5 1.4-1.4-6.1-6.1 6.1-6.1-1.4-1.4Z"></path>
+          </svg>
+        </button>
+        <div class="media-carousel-dots">
+          {media.slides.map((_, index) => (
+            <button
+              class={index === 0 ? 'is-active' : ''}
+              type="button"
+              data-carousel-dot
+              aria-label={`Ir a media ${index + 1}`}
+            ></button>
+          ))}
+        </div>
+        <button type="button" data-carousel-next aria-label="Siguiente">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8.5 19.5 16 12 8.5 4.5 7.1 5.9l6.1 6.1-6.1 6.1 1.4 1.4Z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+{
+  media?.type === 'sequence' && (
+    <div
+      class="project-media sequence-viewer"
+      data-sequence-viewer
+      data-lightbox-src={media.frames[0]}
+      data-lightbox-alt={media.alt}
+      data-frame-count={media.frames.length}
+      data-sequence-interval={media.interval || 560}
+      data-media-zoom-target
+    >
+      <div class="sequence-stage">
+        {media.frames.map((frame, index) => (
+          <img
+            class={`sequence-frame ${index === 0 ? 'is-active' : ''}`}
+            src={frame}
+            alt={index === 0 ? media.alt : ''}
+            loading={index < 3 ? 'eager' : 'lazy'}
+            decoding="async"
+            data-sequence-frame
+          />
+        ))}
+        <button class="sequence-step-button sequence-step-button-prev" type="button" data-sequence-prev aria-label="Frame anterior">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15.5 4.5 8 12l7.5 7.5 1.4-1.4-6.1-6.1 6.1-6.1-1.4-1.4Z"></path>
+          </svg>
+        </button>
+        <button class="sequence-step-button sequence-step-button-next" type="button" data-sequence-next aria-label="Frame siguiente">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8.5 19.5 16 12 8.5 4.5 7.1 5.9l6.1 6.1-6.1 6.1 1.4 1.4Z"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="sequence-controls">
+        <span>01</span>
+        <input type="range" min="0" max={media.frames.length - 1} value="0" data-sequence-slider aria-label="Frame del render" />
+        <span>{String(media.frames.length).padStart(2, '0')}</span>
+      </div>
+      <span class="media-zoom-label">{zoomLabel}</span>
+      <button class="media-window-button" type="button" aria-label={windowLabel} data-open-lightbox data-lightbox-src={media.frames[0]} data-lightbox-type="image" data-lightbox-alt={media.alt}>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 10V4h6v2H6v4H4Zm14 0V6h-4V4h6v6h-2ZM4 14h2v4h4v2H4v-6Zm14 4v-4h2v6h-6v-2h4Z"></path>
+        </svg>
+      </button>
+    </div>
+  )
+}

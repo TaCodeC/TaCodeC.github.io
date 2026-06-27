@@ -1,24 +1,13 @@
 import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
-import tailwind from '@astrojs/tailwind';
-import glsl from 'vite-plugin-glsl';
+import tailwindcss from '@tailwindcss/vite';
 
-// https://astro.build/config
 export default defineConfig({
-  integrations: [
-    react(),
-    tailwind({
-      applyBaseStyles: false,
-    }),
-  ],
+  site: 'https://fernandocortes.dev',
+  output: 'static',
   vite: {
-    plugins: [glsl()],
-    ssr: {
-      noExternal: ['three', '@react-three/fiber', '@react-three/drei', 'detect-gpu'],
-    },
-    optimizeDeps: {
-      include: ['three', '@react-three/fiber', '@react-three/drei', 'detect-gpu'],
+    plugins: [tailwindcss()],
+    build: {
+      chunkSizeWarningLimit: 700,
     },
   },
-  site: 'https://fernandocortes.dev',
 });

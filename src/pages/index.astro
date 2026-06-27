@@ -1,37 +1,1529 @@
 ---
-import "../styles/global.css";
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectMedia from '../components/ProjectMedia.astro';
 
-interface Props {
-    title?: string;
-}
-import Hero from "../components/Index/hero.astro";
-import Navbar from "../components/Index/navbar.astro";
-import Techs from "../components/Index/Techs.astro";
-import Proyects from "../components/Index/proyects.astro";
-import AboutMe from "../components/Index/aboutme.astro";
-import Contact from "../components/Index/contact.astro";
-const { title = "Graphics Portfolio" } = Astro.props;
+const alphaDownloadUrl = 'https://drive.google.com/file/d/1bkaS038vE9e7umD3WS48KKHE6TBI_1LW/view?usp=share_link';
+const contactEmail = 'tacodecrt@gmail.com';
+
+const robotAntgFrames = Array.from({ length: 30 }, (_, index) => {
+  const frame = String(index + 1).padStart(2, '0');
+  return `/media/work/texturizado/robot-antg/Final_${frame}.jpg`;
+});
+
+const laLloronaShots = [
+  { src: '/media/work/la-llorona/terror-1.png', caption: 'Captura 01' },
+  { src: '/media/work/la-llorona/terror-2.png', caption: 'Captura 02' },
+  { src: '/media/work/la-llorona/terror-3.png', caption: 'Captura 03' },
+  { src: '/media/work/la-llorona/terror-4.png', caption: 'Captura 04' },
+  { src: '/media/work/la-llorona/terror-6.png', caption: 'Captura 06' },
+];
+
+const liveSketchSlides = [
+  {
+    type: 'image',
+    src: '/media/work/livesketch/livesketch-main.png',
+    alt: 'LiveSketch ejecutandose en Android con lienzo principal y panel de control',
+    caption: 'LiveSketch / Canvas',
+  },
+  {
+    type: 'image',
+    src: '/media/work/livesketch/livesketch-2.jpg',
+    alt: 'LiveSketch con dibujo en progreso y controles de capas, pincel, color y NDI',
+    caption: 'LiveSketch / NDI',
+  },
+];
+
+const knightModelSlides = [
+  {
+    type: 'video',
+    src: '/media/work/modelado/knight/knight-model-web.mp4',
+    poster: '/media/work/modelado/knight/knight-model-1.png',
+    alt: 'Video del modelo Knight para corto animado',
+    caption: 'Knight / Video',
+  },
+  {
+    type: 'image',
+    src: '/media/work/modelado/knight/knight-model-1.png',
+    alt: 'Modelo Knight vista 01 para corto animado',
+    caption: 'Knight / 01',
+  },
+  {
+    type: 'image',
+    src: '/media/work/modelado/knight/knight-model-2.png',
+    alt: 'Modelo Knight vista 02 para corto animado',
+    caption: 'Knight / 02',
+  },
+  {
+    type: 'image',
+    src: '/media/work/modelado/knight/knight-model-3.png',
+    alt: 'Modelo Knight vista 03 para corto animado',
+    caption: 'Knight / 03',
+  },
+];
+
+const monsTextures = [
+  {
+    title: 'Mons 1',
+    slides: [
+      {
+        src: '/media/work/texturizado/mons/monster-1/mons-1-0.png',
+        alt: 'Texturizado Mons 1 vista principal para experiencia de herreria embrujada',
+        caption: 'Mons 1 / 01',
+      },
+      {
+        src: '/media/work/texturizado/mons/monster-1/mons-1-1.png',
+        alt: 'Texturizado Mons 1 variacion 1 para experiencia de herreria embrujada',
+        caption: 'Mons 1 / 02',
+      },
+      {
+        src: '/media/work/texturizado/mons/monster-1/mons-1-2.png',
+        alt: 'Texturizado Mons 1 variacion 2 para experiencia de herreria embrujada',
+        caption: 'Mons 1 / 03',
+      },
+      {
+        src: '/media/work/texturizado/mons/monster-1/mons-1-3.png',
+        alt: 'Texturizado Mons 1 variacion 3 para experiencia de herreria embrujada',
+        caption: 'Mons 1 / 04',
+      },
+      {
+        src: '/media/work/texturizado/mons/monster-1/mons-1-4.png',
+        alt: 'Texturizado Mons 1 variacion 4 para experiencia de herreria embrujada',
+        caption: 'Mons 1 / 05',
+      },
+    ],
+  },
+  {
+    title: 'Mons 2',
+    slides: [
+      {
+        src: '/media/work/texturizado/mons/monster-2/mons-2-0.png',
+        alt: 'Texturizado Mons 2 vista principal para experiencia de herreria embrujada',
+        caption: 'Mons 2 / 01',
+      },
+      {
+        src: '/media/work/texturizado/mons/monster-2/mons-2-2.png',
+        alt: 'Texturizado Mons 2 variacion 2 para experiencia de herreria embrujada',
+        caption: 'Mons 2 / 02',
+      },
+      {
+        src: '/media/work/texturizado/mons/monster-2/mons-2-3.png',
+        alt: 'Texturizado Mons 2 variacion 3 para experiencia de herreria embrujada',
+        caption: 'Mons 2 / 03',
+      },
+    ],
+  },
+  {
+    title: 'Mons 3',
+    slides: [
+      {
+        src: '/media/work/texturizado/mons/monster-3/mons-3-1.png',
+        alt: 'Texturizado Mons 3 vista 1 para experiencia de herreria embrujada',
+        caption: 'Mons 3 / 01',
+      },
+    ],
+  },
+];
+
+const samuraiRenders = [
+  {
+    src: '/media/work/texturizado/samurai/samurai_1_01.jpg',
+    alt: 'Render de texturizado Samurai vista 01',
+    caption: 'Samurai 01',
+  },
+  {
+    src: '/media/work/texturizado/samurai/samurai_1_02.jpg',
+    alt: 'Render de texturizado Samurai vista 02',
+    caption: 'Samurai 02',
+  },
+  {
+    src: '/media/work/texturizado/samurai/samurai_1_03.jpg',
+    alt: 'Render de texturizado Samurai vista 03',
+    caption: 'Samurai 03',
+  },
+  {
+    src: '/media/work/texturizado/samurai/samurai_1_04.jpg',
+    alt: 'Render de texturizado Samurai vista 04',
+    caption: 'Samurai 04',
+  },
+];
+
+const samuraiFrames = samuraiRenders.map((render) => render.src);
+
+const featuredProjects = [
+  {
+    number: '01',
+    title: 'Sentinella',
+    field: 'Unity / Juego',
+    description: 'Shaders narrativos y funcionalidad en Unity para storytelling inmersivo en plataformas moviles.',
+    tags: ['Unity', 'Shaders', 'Mobile VR'],
+    thumbnail: '/media/work/sentinella/sentinella-miniatura.png',
+    targetTechnology: 'tech-unity',
+    targetProject: 'unity-sentinella',
+    languages: [
+      { name: 'HLSL', icon: '/media/tech-icons/languages/hlsl.svg' },
+      { name: 'C#', icon: '/media/tech-icons/languages/dotnet.svg' },
+    ],
+  },
+  {
+    number: '02',
+    title: 'Samurai',
+    field: 'Texturizado / Render',
+    description: 'Texturizado y lookdev de personaje con renders para revisar materiales y lectura de superficie.',
+    tags: ['Texturizado', 'Render', 'Lookdev'],
+    thumbnail: '/media/work/texturizado/samurai/samurai_1_01.jpg',
+    targetTechnology: 'tech-substance',
+    targetProject: 'texture-samurai',
+  },
+  {
+    number: '03',
+    title: 'LiveSketch',
+    field: 'Android / NDI',
+    description: 'App Android de dibujo con OpenGL y streaming de lienzo via NDI.',
+    tags: ['Android', 'NDI', 'NativeActivity'],
+    thumbnail: '/media/work/livesketch/livesketch-main.png',
+    targetTechnology: 'tech-mobile',
+    targetProject: 'mobile-livesketch',
+    languages: [
+      { name: 'Java', icon: '/media/tech-icons/languages/java.svg' },
+      { name: 'C++', icon: '/media/tech-icons/languages/cplusplus.svg' },
+      { name: 'OpenGL', icon: '/media/tech-icons/languages/opengl.svg' },
+    ],
+  },
+];
+
+const technologies = [
+  {
+    id: 'tech-unity',
+    name: 'Unity',
+    area: 'Gameplay, animaciones y realtime',
+    icon: '/media/tech-icons/unity.svg',
+    description: 'Gameplay, shaders y experiencias interactivas listas para probar.',
+    tags: ['C#', 'Game systems', 'Animaciones', 'Realtime', 'XR', 'VR'],
+    languages: [
+      { name: 'C#', icon: '/media/tech-icons/languages/dotnet.svg' },
+      { name: 'JS', icon: '/media/tech-icons/languages/javascript.svg' },
+    ],
+    projects: [
+      {
+        id: 'unity-sentinella',
+        number: '01',
+        title: 'Sentinella',
+        description: 'Implementacion de funcionalidad en Unity y diseno tecnico de shaders narrativos optimizados: outline, toon y rim-light para storytelling inmersivo en plataformas moviles.',
+        tags: ['Unity', 'C#', 'Shaders', 'Mobile VR'],
+        media: {
+          type: 'video',
+          src: '/media/work/sentinella/trailer-sentinella.mp4',
+          poster: '/media/work/sentinella/sentinella-miniatura.png',
+          alt: 'Trailer del juego Sentinella',
+        },
+        action: {
+          label: 'Steam pronto',
+          icon: '/media/tech-icons/platforms/steam.svg',
+          tone: 'steam',
+        },
+      },
+      {
+        id: 'unity-herreria',
+        number: '02',
+        title: 'Herreria embrujada',
+        description: 'Experiencia de terror en Unity con Shader Graph, VFX Graph y camara en primera persona con Cinemachine.',
+        tags: ['Unity', 'Shader Graph', 'VFX Graph', 'Cinemachine'],
+        media: {
+          type: 'video',
+          src: '/media/work/herreria/herreria-terror.mp4',
+          poster: '/media/work/texturizado/mons/mons-2.png',
+          alt: 'Video de experiencia de terror en una herreria embrujada',
+        },
+        actions: [
+          {
+            label: 'Windows',
+            href: 'https://drive.google.com/file/d/1X6PIH3FpF-EKfCxxG9WZfrNNorN30u7q/view?usp=sharing',
+            icon: '/media/tech-icons/platforms/windows.svg',
+            tone: 'windows',
+          },
+          {
+            label: 'macOS',
+            href: 'https://drive.google.com/file/d/181SgMlX90peLIArG36QbY9R28TGhR_2h/view?usp=sharing',
+            icon: '/media/tech-icons/platforms/macos.svg',
+            tone: 'macos',
+          },
+        ],
+      },
+      {
+        id: 'unity-la-llorona',
+        number: '03',
+        title: 'La Llorona',
+        description: 'Mini juego de terror en primera persona: sobrevivir manteniendo a La Llorona bajo la mirada mientras se completan objetivos.',
+        tags: ['Unity', 'Horror game', 'First person', 'AI behavior'],
+        media: {
+          type: 'carousel',
+          slides: [
+            {
+              type: 'video',
+              src: '/media/work/la-llorona/la-llorona-gameplay.mp4',
+              poster: '/media/work/la-llorona/terror-1.png',
+              alt: 'Video de gameplay de La Llorona',
+              caption: 'Gameplay',
+            },
+            ...laLloronaShots.map((shot) => ({
+              type: 'image',
+              src: shot.src,
+              alt: `Captura del mini videojuego La Llorona ${shot.caption}`,
+              caption: shot.caption,
+            })),
+          ],
+        },
+        action: {
+          label: 'Descargar demo',
+          href: alphaDownloadUrl,
+          icon: '/media/tech-icons/platforms/macos.svg',
+          tone: 'macos',
+        },
+      },
+      {
+        id: 'unity-drowned',
+        number: '04',
+        title: 'Drowned',
+        description: 'Shooter 2D en Unity con tres niveles, mini subjefes y shader de agua creado con Shader Graph.',
+        tags: ['Unity', '2D shooter', 'Shader Graph', '3 niveles', 'Mini bosses'],
+        media: {
+          type: 'image',
+          src: '/media/work/drowned/drowned-menu.png',
+          alt: 'Pantalla principal del shooter 2D Drowned',
+        },
+        action: {
+          label: 'Jugar web',
+          href: 'https://tacodecrt.itch.io/drowned',
+          icon: '/media/tech-icons/platforms/itchio.svg',
+          tone: 'itchio',
+        },
+      },
+    ],
+  },
+  {
+    id: 'tech-maya',
+    name: 'Modelado',
+    area: 'Modelado 3D',
+    icon: '/media/tech-icons/maya.svg',
+    description: 'Modelado, rigging y preparacion de assets para animacion o Unity.',
+    tags: ['Modelado', 'Rigging', 'Assets'],
+    languages: [],
+    projects: [
+      {
+        id: 'maya-knight',
+        number: '01',
+        title: 'Knight',
+        description: 'Modelo de caballero medieval: modelado, rigging, animacion e implementacion final en Unity.',
+        tags: ['Maya', 'Modelado', 'Rigging', 'Unity'],
+        media: {
+          type: 'carousel',
+          slides: knightModelSlides,
+        },
+      },
+      {
+        id: 'maya-robot-antg',
+        number: '02',
+        title: 'Robot Antg',
+        description: 'Robot hard surface modelado en Maya, presentado como secuencia de renders para lectura de silueta y volumen.',
+        tags: ['Maya', 'Modelado', 'Hard surface'],
+        media: {
+          type: 'sequence',
+          frames: robotAntgFrames,
+          interval: 560,
+          alt: 'Secuencia de renders del modelado Robot Antg',
+        },
+      },
+    ],
+  },
+  {
+    id: 'tech-substance',
+    name: 'Texturizado',
+    area: 'Texturizado y lookdev',
+    icon: '/media/tech-icons/substance-painter.svg',
+    description: 'Texturizado, baking y lookdev para personajes, criaturas y robots.',
+    tags: ['Painter', 'Baking', 'Materials'],
+    languages: [],
+    projects: [
+      {
+        id: 'texture-samurai',
+        number: '01',
+        title: 'Samurai',
+        description: 'Texturizado de samurai en Substance Painter, con materiales y renders finales de lookdev.',
+        tags: ['Substance', 'Lookdev', 'Render'],
+        media: {
+          type: 'sequence',
+          frames: samuraiFrames,
+          interval: 1450,
+          alt: 'Secuencia de renders del texturizado Samurai',
+        },
+      },
+      {
+        id: 'texture-mons',
+        number: '02',
+        title: 'Mons 1 / 2 / 3',
+        description: 'Criaturas de terror texturizadas para Herreria embrujada, con variantes de materiales y lectura grotesca.',
+        tags: ['Texturizado', 'Terror', 'Creature art'],
+        media: {
+          type: 'carouselSet',
+          groups: monsTextures.map((textureGroup) => ({
+            title: textureGroup.title,
+            slides: textureGroup.slides.map((texture) => ({
+              type: 'image',
+              src: texture.src,
+              alt: texture.alt,
+              caption: texture.caption,
+            })),
+          })),
+        },
+      },
+      {
+        id: 'texture-robot-render',
+        number: '03',
+        title: 'Robot Render',
+        description: 'Lookdev y render final de robot, enfocado en materiales metalicos y presentacion de asset.',
+        tags: ['Texturizado', 'Robot', 'Render'],
+        media: {
+          type: 'image',
+          src: '/media/work/texturizado/robot-render/robot-render.jpg',
+          alt: 'Render de texturizado para robot',
+        },
+      },
+    ],
+  },
+  {
+    id: 'tech-mobile',
+    name: 'Mobile',
+    area: 'Apps y herramientas',
+    icon: '/media/tech-icons/android.svg',
+    description: 'Apps moviles y herramientas creativas con OpenGL, Android SDK y flujos de video.',
+    tags: ['Android', 'OpenGL', 'Tools'],
+    languages: [
+      { name: 'Java', icon: '/media/tech-icons/languages/java.svg' },
+      { name: 'C++', icon: '/media/tech-icons/languages/cplusplus.svg' },
+      { name: 'OpenGL', icon: '/media/tech-icons/languages/opengl.svg' },
+    ],
+    projects: [
+      {
+        id: 'mobile-livesketch',
+        number: '01',
+        title: 'LiveSketch',
+        description: 'App de dibujo en NativeActivity para Android con OpenGL y transmision del lienzo por protocolo NDI.',
+        tags: ['Android', 'NativeActivity', 'NDI', 'TouchDesigner', 'Java', 'C++', 'OpenGL'],
+        media: {
+          type: 'carousel',
+          slides: liveSketchSlides,
+        },
+        action: {
+          label: 'Descargar alpha',
+          href: alphaDownloadUrl,
+          icon: '/media/tech-icons/android.svg',
+          tone: 'android',
+        },
+      },
+    ],
+  },
+];
+
+const aboutTechnologies = [
+  {
+    name: 'Licenciatura en Artes Digitales',
+    icons: ['/media/education/ugto.png', '/media/education/artes-digitales.png'],
+    featured: true,
+  },
+  { name: 'C++', icon: '/media/tech-icons/languages/cplusplus.svg' },
+  { name: 'C#', icon: '/media/tech-icons/languages/dotnet.svg' },
+  { name: 'Java', icon: '/media/tech-icons/languages/java.svg' },
+  { name: 'OpenGL', icon: '/media/tech-icons/languages/opengl.svg' },
+  { name: 'Unity', icon: '/media/tech-icons/unity.svg' },
+  { name: 'HLSL', icon: '/media/tech-icons/languages/hlsl.svg' },
+  { name: 'Maya', icon: '/media/tech-icons/maya.svg' },
+  { name: 'Substance Painter', icon: '/media/tech-icons/substance-painter.svg' },
+];
+
+const timelineItems = [
+  {
+    period: '2026 - presente',
+    title: 'App AR para difusion universitaria',
+    place: 'Universidad de Guanajuato / DICIS',
+    description: 'Desarrollo de una experiencia interactiva para ferias profesiograficas, enfocada en comunicar programas academicos con claridad visual y contenido navegable.',
+    tags: ['AR', 'Unity', 'Comunicacion visual', 'DICIS'],
+  },
+  {
+    period: '2025 - presente',
+    title: 'Experiencia interactiva VR para salud mental',
+    place: 'Universidad de Guanajuato / Secretaria de Salud',
+    description: 'Implementacion de funcionalidad en Unity y diseno tecnico de shaders narrativos optimizados: outline, toon y rim-light para storytelling inmersivo en plataformas moviles.',
+    tags: ['Unity', 'VR', 'Shaders', 'Performance'],
+  },
+  {
+    period: '2026',
+    title: 'Coautor en PMW-2026',
+    place: 'Print, Multimedia & Web Technologies / Lviv-Kharkiv',
+    description: 'Participacion como coautor en una propuesta sobre implementacion eficiente de shaders para narrativas inmersivas en plataformas moviles de VR heredadas.',
+    tags: ['Research', 'Shaders', 'Mobile VR'],
+  },
+  {
+    period: '2025',
+    title: 'Sitio oficial para Posgrado en Biociencias',
+    place: 'UG DICIVA',
+    description: 'Desarrollo e implementacion del sitio oficial con CMS, permitiendo actualizaciones de contenido y medios sin requerir conocimientos tecnicos.',
+    tags: ['Web', 'CMS', 'Deploy institucional'],
+  },
+  {
+    period: 'En desarrollo',
+    title: 'LiveSketch / Android Drawing App',
+    place: 'Proyecto personal',
+    description: 'Aplicacion de dibujo en Android con OpenGL que transmite el lienzo por red mediante NDI, conectando graficos en tiempo real con flujos de video.',
+    tags: ['Android', 'OpenGL', 'NDI', 'Java', 'C++'],
+  },
+  {
+    period: '2026',
+    title: 'Licenciatura en Artes Digitales',
+    place: 'Universidad de Guanajuato',
+    description: 'Formacion en artes digitales cercana a egresar, con promedio actual de 9.4/10 y enfoque en sistemas visuales, produccion interactiva y criterio artistico.',
+    tags: ['Artes Digitales', 'UG', 'Promedio 9.4'],
+  },
+];
 ---
 
-<!doctype html>
-<html lang="es">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
-            name="description"
-            content="Portfolio profesional de programador gráfico y de videojuegos"
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <meta name="generator" content={Astro.generator} />
-        <title>{title}</title>
-    </head>
-    <body class="bg-gray-50">
-        <Hero />
-        <Navbar />
-        <Techs />
-        <Proyects />
-        <AboutMe />
-        <Contact />
-    </body>
-</html>
+<BaseLayout>
+  <header class="site-header fixed inset-x-0 top-0 z-30 bg-transparent" data-site-header>
+    <nav class="mx-auto flex h-16 max-w-7xl items-center px-5 sm:px-8" aria-label="Principal">
+      <div class="site-brand">
+        <a class="site-avatar" href="https://github.com/TaCodeC" target="_blank" rel="noreferrer" aria-label="GitHub de TaCodeC">
+          <img src="/media/tacodec-github-avatar.png" alt="Avatar de GitHub de TaCodeC" width="400" height="400" />
+        </a>
+        <a class="site-wordmark" href="#top" aria-label="Inicio">tacodec</a>
+      </div>
+      <div class="nav-socials" aria-label="Redes y contacto" aria-hidden="true" data-nav-socials>
+        <button
+          class="hero-icon-button"
+          type="button"
+          aria-label="LinkedIn"
+          data-tooltip="LinkedIn"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.25 2.36 4.25 5.43v6.31h.03ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.02H3.56V9h3.56v11.45ZM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0Z"></path>
+          </svg>
+        </button>
+        <a
+          class="hero-icon-button"
+          href="https://github.com/TaCodeC"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="GitHub de Fernando Cortés"
+          data-tooltip="GitHub"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 0a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.04c-3.34.73-4.04-1.41-4.04-1.41-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 0Z"></path>
+          </svg>
+        </a>
+        <button
+          class="hero-icon-button"
+          type="button"
+          aria-label="Copiar correo"
+          data-copy-email={contactEmail}
+          data-tooltip="Copiar correo"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h11v14Z"></path>
+          </svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top" class="bg-carbon">
+    <section class="hero-shell relative min-h-[92svh] overflow-clip pt-16 text-center">
+      <video
+        class="hero-video absolute inset-0 h-full w-full object-cover"
+        src="/media/portfolio-hero.mp4"
+        poster="/media/portfolio-hero-poster.jpg"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-hidden="true"
+      ></video>
+      <div class="hero-blackout pointer-events-none absolute inset-0"></div>
+      <div class="hero-scan pointer-events-none absolute inset-0"></div>
+      <div class="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-carbon to-transparent"></div>
+
+      <div class="relative z-10 mx-auto flex min-h-[calc(92svh-4rem)] max-w-5xl flex-col items-center justify-center px-5 py-14 sm:px-8">
+        <div class="hero-portrait" aria-hidden="true">
+          <img src="/media/fernando-cortes.jpeg" alt="" width="800" height="800" />
+        </div>
+
+        <h1 class="mt-8 text-balance text-5xl font-black leading-none text-bone sm:text-7xl lg:text-8xl">
+          Fernando Cortés
+        </h1>
+
+        <p class="hero-typewriter" data-role-style="technical" aria-live="polite">
+          <span class="hero-typewriter-prompt" aria-hidden="true">&gt;</span>
+          <span data-role-typewriter></span>
+          <span class="hero-typewriter-caret" aria-hidden="true"></span>
+        </p>
+
+        <div class="hero-socials-dock mt-9" data-hero-socials-dock>
+          <div class="hero-socials flex items-center justify-center gap-3" aria-label="Redes y contacto" data-hero-socials>
+            <button
+              class="hero-icon-button"
+              type="button"
+              aria-label="LinkedIn"
+              data-tooltip="LinkedIn"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.59 0 4.25 2.36 4.25 5.43v6.31h.03ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.02H3.56V9h3.56v11.45ZM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0Z"></path>
+              </svg>
+            </button>
+            <a
+              class="hero-icon-button"
+              href="https://github.com/TaCodeC"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="GitHub de Fernando Cortés"
+              data-tooltip="GitHub"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 0a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.04c-3.34.73-4.04-1.41-4.04-1.41-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 0Z"></path>
+              </svg>
+            </a>
+            <button
+              class="hero-icon-button"
+              type="button"
+              aria-label="Copiar correo"
+              data-copy-email={contactEmail}
+              data-tooltip="Copiar correo"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h11v14Z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <a class="hero-down" href="#work" aria-label="Ir a la siguiente seccion" data-tooltip="Siguiente">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M11 4h2v12.17l5.59-5.58L20 12l-8 8-8-8 1.41-1.41L11 16.17V4Z"></path>
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <section id="work" class="border-y border-white/10 bg-carbon py-20 text-bone sm:py-24">
+      <div class="mx-auto max-w-7xl px-5 sm:px-8">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div class="max-w-3xl">
+            <p class="font-mono text-xs uppercase tracking-[0.32em] text-steel">Selected work</p>
+            <h2 class="mt-4 text-4xl font-black leading-tight sm:text-5xl">Selected Work</h2>
+          </div>
+          <p class="max-w-md text-base leading-7 text-steel">
+            Juegos, herramientas graficas y piezas de lookdev listas para revisar.
+          </p>
+        </div>
+
+        <div class="impact-grid mt-12">
+          {
+            featuredProjects.map((project) => (
+              <button
+                class="impact-card"
+                type="button"
+                aria-label={`Mostrar ${project.title} en proyectos por tecnologia`}
+                data-featured-project-target={project.targetProject}
+                data-technology-target={project.targetTechnology}
+              >
+                <span class={`impact-thumbnail ${project.thumbnail ? 'has-media' : ''}`} aria-hidden="true">
+                  {project.thumbnail && (
+                    <img src={project.thumbnail} alt="" loading="lazy" decoding="async" />
+                  )}
+                </span>
+                {
+                  project.languages?.length > 0 && (
+                    <span class="impact-language-stack" aria-label={`Lenguajes usados en ${project.title}`}>
+                      {project.languages.map((language) => (
+                        <span class="impact-language-chip" title={language.name}>
+                          <img src={language.icon} alt="" width="22" height="22" loading="lazy" />
+                          <span>{language.name}</span>
+                        </span>
+                      ))}
+                    </span>
+                  )
+                }
+                <span class="impact-card-body">
+                  <span class="impact-card-meta">
+                    <span>{project.field}</span>
+                  </span>
+                  <span class="impact-card-title">{project.title}</span>
+                  <span class="impact-card-description">{project.description}</span>
+                  <span class="mt-6 flex flex-wrap gap-2">
+                    {project.tags.map((tag) => (
+                      <span class="border border-white/15 px-3 py-1 font-mono text-xs uppercase tracking-[0.14em] text-bone/70">
+                        {tag}
+                      </span>
+                    ))}
+                  </span>
+                </span>
+              </button>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section id="technologies" class="border-b border-white/10 bg-carbon py-20 text-bone sm:py-24">
+      <div class="mx-auto max-w-7xl px-5 sm:px-8">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div class="max-w-3xl">
+            <p class="font-mono text-xs uppercase tracking-[0.32em] text-steel">Ramas de trabajo</p>
+            <h2 class="mt-4 text-4xl font-black leading-tight sm:text-5xl">Explora por disciplina.</h2>
+          </div>
+          <p class="max-w-md text-base leading-7 text-steel">
+            Proyectos agrupados por motor, modelado, texturizado y mobile.
+          </p>
+        </div>
+
+        <div class="technology-work mt-12" data-selector-group>
+          <div class="technology-selector" role="tablist" aria-label="Tecnologias del portafolio">
+            {
+              technologies.map((technology, index) => (
+                <button
+                  class={`technology-tab ${index === 0 ? 'is-active' : ''}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={index === 0 ? 'true' : 'false'}
+                  aria-controls={technology.id}
+                  data-selector-tab
+                >
+                  <span class="technology-logo" aria-hidden="true">
+                    <img src={technology.icon} alt="" width="64" height="64" loading="lazy" />
+                  </span>
+                  <span class="technology-name">{technology.name}</span>
+                  <span class="technology-area">{technology.area}</span>
+                  {
+                    technology.languages.length > 0 && (
+                      <span class="technology-language-list" aria-label={`Lenguajes en ${technology.name}`}>
+                        {technology.languages.map((language) => (
+                          <span class="technology-language-chip">
+                            <img src={language.icon} alt="" width="20" height="20" loading="lazy" />
+                            <span>{language.name}</span>
+                          </span>
+                        ))}
+                      </span>
+                    )
+                  }
+                </button>
+              ))
+            }
+          </div>
+
+          <div class="mt-4">
+            {
+              technologies.map((technology, index) => (
+                <article
+                  id={technology.id}
+                  class={`technology-panel ${index === 0 ? 'is-active' : ''}`}
+                  role="tabpanel"
+                >
+                  <div class="technology-panel-header">
+                    <div>
+                      <p class="font-mono text-xs uppercase tracking-[0.24em] text-steel">{technology.area}</p>
+                      <h3 class="mt-4 text-3xl font-black leading-tight sm:text-4xl">{technology.name}</h3>
+                      <p class="mt-5 max-w-2xl text-lg leading-8 text-steel">{technology.description}</p>
+                      {
+                        technology.languages.length > 0 && (
+                          <div class="technology-panel-languages">
+                            {technology.languages.map((language) => (
+                              <span class="technology-language-chip">
+                                <img src={language.icon} alt="" width="20" height="20" loading="lazy" />
+                                <span>{language.name}</span>
+                              </span>
+                            ))}
+                          </div>
+                        )
+                      }
+                    </div>
+                    <div class="technology-panel-tags">
+                      {technology.tags.map((tag) => (
+                        <span class="border border-white/15 px-3 py-1 font-mono text-xs uppercase tracking-[0.14em] text-bone/70">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div class="technology-projects">
+                    {technology.projects.map((project) => (
+                      <article id={project.id} class={`technology-project-card ${project.media ? 'has-rich-media' : ''}`} tabindex="-1">
+                        {project.media && <ProjectMedia media={project.media} />}
+                        <div class="technology-project-content">
+                          <div class="technology-project-copy">
+                            <h4>{project.title}</h4>
+                            <p>{project.description}</p>
+                            <div class="mt-5 flex flex-wrap gap-2">
+                              {project.tags.map((tag) => (
+                                <span class="border border-white/15 px-3 py-1 font-mono text-xs uppercase tracking-[0.14em] text-bone/70">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                            {(project.actions || (project.action ? [project.action] : [])).length > 0 && (
+                              <div class="project-action-row">
+                                {(project.actions || (project.action ? [project.action] : [])).map((action) =>
+                                  action.href ? (
+                                    <a class="project-action-button" data-action-tone={action.tone} href={action.href} target="_blank" rel="noreferrer">
+                                      {action.icon && <img src={action.icon} alt="" width="22" height="22" loading="lazy" />}
+                                      <span>{action.label}</span>
+                                    </a>
+                                  ) : (
+                                    <span class="project-action-button is-disabled" data-action-tone={action.tone} aria-disabled="true">
+                                      {action.icon && <img src={action.icon} alt="" width="22" height="22" loading="lazy" />}
+                                      <span>{action.label}</span>
+                                    </span>
+                                  )
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="aboutme" class="about-section bg-graphite py-20 text-bone sm:py-24">
+      <div class="mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-[0.88fr_1.12fr]">
+        <figure class="about-portrait-card" aria-label="Retrato de Fernando Cortes">
+          <span class="about-portrait-frame">
+            <img src="/media/fernando-cortes-about.png" alt="Fernando Cortes" loading="lazy" decoding="async" />
+          </span>
+        </figure>
+
+        <div class="about-panel">
+          <div class="space-y-6 text-lg leading-8 text-steel">
+            <p>
+              Soy estudiante de Artes Digitales en la Universidad de Guanajuato, cercano a egresar, con una inclinacion fuerte por el apartado tecnico de las implementaciones visuales: shaders, graficos en tiempo real, videojuegos, animacion, texturizado y experiencias interactivas en Unity.
+            </p>
+            <p>
+              Trabajo con C++, Java y pipelines graficos con OpenGL, una base que me permite entender con mayor profundidad los elementos que afectan el rendimiento, la optimizacion tecnica y la integracion de sistemas visuales en produccion.
+            </p>
+            <p>
+              Mi formacion artistica me ayuda a tomar decisiones visuales con intencion: no solo implementar una solucion, sino disenar propuestas atractivas, legibles e innovadoras desde el criterio estetico y tecnico.
+            </p>
+          </div>
+
+          <div class="about-tech-stack mt-8" aria-label="Tecnologias que manejo">
+            {
+              aboutTechnologies.map((technology) => (
+                <span class={`about-tech-chip ${technology.featured ? 'is-education' : ''}`}>
+                  <span class="about-tech-icons" aria-hidden="true">
+                    {(technology.icons || [technology.icon]).map((icon) => (
+                      <img src={icon} alt="" width="22" height="22" loading="lazy" />
+                    ))}
+                  </span>
+                  <span>{technology.name}</span>
+                </span>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="trajectory" class="trajectory-section bg-carbon py-20 text-bone sm:py-24">
+      <div class="mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-[0.72fr_1.28fr]">
+        <div class="trajectory-intro">
+          <p class="font-mono text-xs uppercase tracking-[0.32em] text-steel">Trayectoria</p>
+          <h2 class="mt-4 text-4xl font-black leading-tight sm:text-5xl">Experiencia aplicada en arte tecnico, web y sistemas interactivos.</h2>
+          <p class="mt-6 text-lg leading-8 text-steel">
+            Proyectos institucionales, investigacion y herramientas propias donde se cruzan produccion visual, rendimiento y comunicacion interactiva.
+          </p>
+        </div>
+
+        <div class="trajectory-content">
+          <div class="trajectory-timeline" aria-label="Trayectoria profesional y academica">
+            {
+              timelineItems.map((item) => (
+                <article class="trajectory-item">
+                  <div class="trajectory-marker" aria-hidden="true"></div>
+                  <div class="trajectory-card">
+                    <p class="trajectory-period">{item.period}</p>
+                    <h3>{item.title}</h3>
+                    <p class="trajectory-place">{item.place}</p>
+                    <p class="trajectory-description">{item.description}</p>
+                    <div class="trajectory-tags">
+                      {item.tags.map((tag) => (
+                        <span>{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+                </article>
+              ))
+            }
+          </div>
+
+          <div class="trajectory-actions">
+            <a class="project-action-button trajectory-cv-button" href="/media/docs/CV_FernandoCortes.pdf" download>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 3h2v10.17l3.59-3.58L18 11l-6 6-6-6 1.41-1.41L11 13.17V3Zm-6 16h14v2H5v-2Z"></path>
+              </svg>
+              <span>Descargar CV</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="border-t border-white/10 bg-graphite py-16 text-bone sm:py-20">
+      <div class="mx-auto flex max-w-7xl flex-col gap-8 px-5 sm:px-8 lg:flex-row lg:items-end lg:justify-between">
+        <div class="max-w-3xl">
+          <p class="font-mono text-xs uppercase tracking-[0.32em] text-steel">Contact</p>
+          <h2 class="mt-4 text-4xl font-black leading-tight sm:text-5xl">Graficos, shaders o experiencias interactivas.</h2>
+        </div>
+        <button
+          class="contact-copy-button border border-white/25 bg-black px-6 py-4 text-sm font-bold uppercase tracking-[0.16em] text-bone transition hover:bg-bone hover:text-carbon"
+          type="button"
+          data-copy-email={contactEmail}
+          data-tooltip="Copiar correo"
+        >
+          <span data-copy-label>{contactEmail}</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <div class="media-lightbox" data-media-lightbox hidden>
+    <button class="media-lightbox-backdrop" type="button" data-media-lightbox-close aria-label="Cerrar zoom"></button>
+    <div class="media-lightbox-dialog" role="dialog" aria-modal="true" aria-label="Vista ampliada">
+      <button class="media-lightbox-close" type="button" data-media-lightbox-close aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4 6.4 5Z"></path>
+        </svg>
+      </button>
+      <div class="media-lightbox-body" data-media-lightbox-body></div>
+    </div>
+  </div>
+
+  <script>
+    const urlLanguage = new URLSearchParams(window.location.search).get('lang');
+    const primaryBrowserLanguage = (navigator.languages?.[0] || navigator.language || 'es').toLowerCase();
+    const pageLanguage = urlLanguage === 'en' || (!urlLanguage && primaryBrowserLanguage.startsWith('en')) ? 'en' : 'es';
+    document.documentElement.lang = pageLanguage;
+
+    const englishText = {
+      'Copiar correo': 'Copy email',
+      'Siguiente': 'Next',
+      'Selected work': 'Selected work',
+      'Juegos, herramientas graficas y piezas de lookdev listas para revisar.': 'Games, graphics tools, and lookdev pieces ready to explore.',
+      'Ramas de trabajo': 'Work areas',
+      'Explora por disciplina.': 'Explore by discipline.',
+      'Proyectos agrupados por motor, modelado, texturizado y mobile.': 'Projects grouped by engine, modeling, texturing, and mobile work.',
+      'Gameplay, animaciones y realtime': 'Gameplay, animation, and realtime',
+      'Gameplay, shaders y experiencias interactivas listas para probar.': 'Gameplay, shaders, and interactive experiences ready to test.',
+      'Unity / Juego': 'Unity / Game',
+      'Shaders narrativos y funcionalidad en Unity para storytelling inmersivo en plataformas moviles.': 'Narrative shaders and Unity functionality for immersive storytelling on mobile platforms.',
+      'Implementacion de funcionalidad en Unity y diseno tecnico de shaders narrativos optimizados: outline, toon y rim-light para storytelling inmersivo en plataformas moviles.': 'Unity functionality and technical shader design for optimized narrative outline, toon, and rim-light effects on mobile immersive platforms.',
+      'Steam pronto': 'Steam soon',
+      'Herreria embrujada': 'Haunted Forge',
+      'Experiencia de terror en Unity con Shader Graph, VFX Graph y camara en primera persona con Cinemachine.': 'Unity horror experience with Shader Graph, VFX Graph, and a first-person camera built with Cinemachine.',
+      'Mini juego de terror en primera persona: sobrevivir manteniendo a La Llorona bajo la mirada mientras se completan objetivos.': 'First-person horror mini-game: survive by keeping La Llorona in sight while completing objectives.',
+      'Descargar demo': 'Download demo',
+      'Shooter 2D en Unity con tres niveles, mini subjefes y shader de agua creado con Shader Graph.': '2D Unity shooter with three levels, mini bosses, and a water shader built in Shader Graph.',
+      'Jugar web': 'Play web',
+      'Modelado': 'Modeling',
+      'Modelado 3D': '3D modeling',
+      'Modelado, rigging y preparacion de assets para animacion o Unity.': 'Modeling, rigging, and asset preparation for animation or Unity.',
+      'Modelo de caballero medieval: modelado, rigging, animacion e implementacion final en Unity.': 'Medieval knight model: modeling, rigging, animation, and final Unity implementation.',
+      'Robot hard surface modelado en Maya, presentado como secuencia de renders para lectura de silueta y volumen.': 'Hard-surface robot modeled in Maya, presented as a render sequence for silhouette and volume readability.',
+      'Texturizado': 'Texturing',
+      'Texturizado / Render': 'Texturing / Render',
+      'Texturizado y lookdev': 'Texturing and lookdev',
+      'Texturizado, baking y lookdev para personajes, criaturas y robots.': 'Texturing, baking, and lookdev for characters, creatures, and robots.',
+      'Texturizado y lookdev de personaje con renders para revisar materiales y lectura de superficie.': 'Character texturing and lookdev with renders focused on material and surface readability.',
+      'Texturizado de samurai en Substance Painter, con materiales y renders finales de lookdev.': 'Samurai texturing in Substance Painter, with materials and final lookdev renders.',
+      'Criaturas de terror texturizadas para Herreria embrujada, con variantes de materiales y lectura grotesca.': 'Horror creatures textured for Haunted Forge, with material variants and grotesque surface readability.',
+      'Lookdev y render final de robot, enfocado en materiales metalicos y presentacion de asset.': 'Robot lookdev and final render focused on metallic materials and asset presentation.',
+      'Apps y herramientas': 'Apps and tools',
+      'Apps moviles y herramientas creativas con OpenGL, Android SDK y flujos de video.': 'Mobile apps and creative tools with OpenGL, Android SDK, and video workflows.',
+      'App Android de dibujo con OpenGL y streaming de lienzo via NDI.': 'Android drawing app with OpenGL and canvas streaming via NDI.',
+      'App de dibujo en NativeActivity para Android con OpenGL y transmision del lienzo por protocolo NDI.': 'NativeActivity Android drawing app with OpenGL and canvas streaming through NDI.',
+      'Descargar alpha': 'Download alpha',
+      'Descargar CV': 'Download CV',
+      'Licenciatura en Artes Digitales': 'B.A. in Digital Arts',
+      'Soy estudiante de Artes Digitales en la Universidad de Guanajuato, cercano a egresar, con una inclinacion fuerte por el apartado tecnico de las implementaciones visuales: shaders, graficos en tiempo real, videojuegos, animacion, texturizado y experiencias interactivas en Unity.': 'I am a Digital Arts student at the University of Guanajuato, close to graduating, with a strong focus on the technical side of visual implementations: shaders, realtime graphics, video games, animation, texturing, and interactive Unity experiences.',
+      'Trabajo con C++, Java y pipelines graficos con OpenGL, una base que me permite entender con mayor profundidad los elementos que afectan el rendimiento, la optimizacion tecnica y la integracion de sistemas visuales en produccion.': 'I work with C++, Java, and OpenGL graphics pipelines, a foundation that helps me understand performance, technical optimization, and production integration for visual systems.',
+      'Mi formacion artistica me ayuda a tomar decisiones visuales con intencion: no solo implementar una solucion, sino disenar propuestas atractivas, legibles e innovadoras desde el criterio estetico y tecnico.': 'My artistic training helps me make intentional visual decisions: not only implementing a solution, but designing attractive, readable, and innovative proposals through both aesthetic and technical judgment.',
+      'Trayectoria': 'Experience',
+      'Experiencia aplicada en arte tecnico, web y sistemas interactivos.': 'Applied experience in technical art, web, and interactive systems.',
+      'Proyectos institucionales, investigacion y herramientas propias donde se cruzan produccion visual, rendimiento y comunicacion interactiva.': 'Institutional projects, research, and personal tools where visual production, performance, and interactive communication meet.',
+      '2026 - presente': '2026 - present',
+      '2025 - presente': '2025 - present',
+      'En desarrollo': 'In development',
+      'App AR para difusion universitaria': 'AR app for university outreach',
+      'Universidad de Guanajuato / DICIS': 'University of Guanajuato / DICIS',
+      'Desarrollo de una experiencia interactiva para ferias profesiograficas, enfocada en comunicar programas academicos con claridad visual y contenido navegable.': 'Interactive experience for academic outreach fairs, focused on communicating programs through clear visuals and navigable content.',
+      'Experiencia interactiva VR para salud mental': 'Interactive VR experience for mental health',
+      'Universidad de Guanajuato / Secretaria de Salud': 'University of Guanajuato / Secretariat of Health',
+      'Coautor en PMW-2026': 'Co-author at PMW-2026',
+      'Participacion como coautor en una propuesta sobre implementacion eficiente de shaders para narrativas inmersivas en plataformas moviles de VR heredadas.': 'Co-author contribution on efficient shader implementation for immersive narratives on legacy mobile VR platforms.',
+      'Sitio oficial para Posgrado en Biociencias': 'Official website for the Biosciences Graduate Program',
+      'Desarrollo e implementacion del sitio oficial con CMS, permitiendo actualizaciones de contenido y medios sin requerir conocimientos tecnicos.': 'Official website developed with a CMS so content and media can be updated without technical knowledge.',
+      'Proyecto personal': 'Personal project',
+      'Aplicacion de dibujo en Android con OpenGL que transmite el lienzo por red mediante NDI, conectando graficos en tiempo real con flujos de video.': 'Android drawing application with OpenGL that streams the canvas over the network through NDI, connecting realtime graphics with video workflows.',
+      'Universidad de Guanajuato': 'University of Guanajuato',
+      'Formacion en artes digitales cercana a egresar, con promedio actual de 9.4/10 y enfoque en sistemas visuales, produccion interactiva y criterio artistico.': 'Digital Arts education near graduation, current GPA 9.4/10, focused on visual systems, interactive production, and artistic judgment.',
+      'Graficos, shaders o experiencias interactivas.': 'Graphics, shaders, or interactive experiences.',
+      'Correo copiado': 'Email copied',
+      'No se pudo copiar': 'Could not copy',
+      'Copiado': 'Copied',
+      'Doble click para zoom': 'Double click to zoom',
+      'Abrir en ventana': 'Open in window',
+      'Captura 01': 'Screenshot 01',
+      'Captura 02': 'Screenshot 02',
+      'Captura 03': 'Screenshot 03',
+      'Captura 04': 'Screenshot 04',
+      'Captura 06': 'Screenshot 06',
+      'Render de texturizado Samurai vista 01': 'Samurai texturing render view 01',
+      'Render de texturizado Samurai vista 02': 'Samurai texturing render view 02',
+      'Render de texturizado Samurai vista 03': 'Samurai texturing render view 03',
+      'Render de texturizado Samurai vista 04': 'Samurai texturing render view 04',
+      'Corto animado': 'Animated short',
+      'Character asset': 'Character asset',
+      'Cinemachine': 'Cinemachine',
+      'Comunicacion visual': 'Visual communication',
+      'Deploy institucional': 'Institutional deploy',
+      'Artes Digitales': 'Digital Arts',
+      'Promedio 9.4': 'GPA 9.4',
+      'Animaciones': 'Animation',
+      'Terror': 'Horror',
+      '3 niveles': '3 levels',
+      'Texturizaciones de monstruos grotescos para una experiencia de terror ambientada en una herreria embrujada.': 'Grotesque monster textures for a horror experience set in a haunted forge.',
+      'Render de texturizado para robot, enfocado en lectura de materiales y presentacion final del asset.': 'Robot texturing render focused on material readability and final asset presentation.'
+    };
+
+    const normalizeText = (value) => value.replace(/\s+/g, ' ').trim();
+    const translateToEnglish = () => {
+      if (pageLanguage !== 'en') return;
+
+      document.title = 'Fernando Cortes - Technical Artist';
+      const metaDescription = document.querySelector('meta[name="description"]');
+      metaDescription?.setAttribute(
+        'content',
+        'Fernando Cortes portfolio: technical art, shaders, Unity, OpenGL, modeling, and interactive experiences.'
+      );
+
+      document.querySelectorAll('[data-tooltip]').forEach((element) => {
+        if (!(element instanceof HTMLElement)) return;
+        const tooltip = element.dataset.tooltip;
+        if (tooltip && englishText[tooltip]) {
+          element.dataset.tooltip = englishText[tooltip];
+        }
+      });
+
+      document.querySelectorAll('body *:not(script):not(style)').forEach((element) => {
+        if (element.children.length > 0) return;
+        const currentText = normalizeText(element.textContent || '');
+        const translatedText = englishText[currentText];
+        if (translatedText) {
+          element.textContent = translatedText;
+        }
+      });
+    };
+
+    translateToEnglish();
+
+    const roles =
+      pageLanguage === 'en'
+        ? ['Technical Artist', 'Programmer', '3D Modeling & Shaders']
+        : ['Technical Artist', 'Programador', 'Modelado 3D y Shaders'];
+    const copyLabels =
+      pageLanguage === 'en'
+        ? { copiedTooltip: 'Copied', copiedText: 'Email copied', failedTooltip: 'Could not copy', resetTooltip: 'Copy email' }
+        : { copiedTooltip: 'Copiado', copiedText: 'Correo copiado', failedTooltip: 'No se pudo copiar', resetTooltip: 'Copiar correo' };
+    const roleStyles = ['technical', 'code', 'lookdev'];
+    const target = document.querySelector('[data-role-typewriter]');
+    const typewriter = target?.closest('.hero-typewriter');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const heroShell = document.querySelector('.hero-shell');
+    let scrollMotionFrame = 0;
+
+    const updateScrollMotion = () => {
+      scrollMotionFrame = 0;
+      if (!(heroShell instanceof HTMLElement)) return;
+
+      const progress = Math.min(1, Math.max(0, window.scrollY / Math.max(1, window.innerHeight)));
+      heroShell.style.setProperty('--hero-scroll-progress', progress.toFixed(3));
+    };
+
+    if (!reduceMotion && heroShell instanceof HTMLElement) {
+      updateScrollMotion();
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (scrollMotionFrame) return;
+          scrollMotionFrame = window.requestAnimationFrame(updateScrollMotion);
+        },
+        { passive: true }
+      );
+    }
+
+    const revealItems = new Set();
+    let revealObserver;
+    let revealSyncFrame = 0;
+
+    const addRevealItem = (element, direction = 'up', delay = 0) => {
+      if (!(element instanceof HTMLElement) || revealItems.has(element)) return;
+
+      element.classList.add('scroll-reveal');
+      element.dataset.revealDirection = direction;
+      element.style.setProperty('--reveal-delay', `${Math.min(delay, 420)}ms`);
+      revealItems.add(element);
+    };
+
+    [
+      ['#work .max-w-3xl', 'up', 0],
+      ['#work > div > div > p.max-w-md', 'up', 80],
+      ['#technologies .max-w-3xl', 'up', 0],
+      ['#technologies > div > div > p.max-w-md', 'up', 80],
+      ['.technology-panel-header', 'up', 0],
+      ['.about-portrait-card', 'left', 0],
+      ['.about-panel', 'right', 120],
+      ['.trajectory-intro', 'left', 0],
+      ['.trajectory-actions', 'up', 120],
+      ['#contact .max-w-3xl', 'left', 0],
+      ['.contact-copy-button', 'right', 120],
+    ].forEach(([selector, direction, delay]) => {
+      document.querySelectorAll(selector).forEach((element) => addRevealItem(element, direction, delay));
+    });
+
+    [
+      ['.impact-grid', '.impact-card', 'up', 90],
+      ['.technology-selector', '.technology-tab', 'scale', 70],
+      ['.technology-projects', '.technology-project-card', 'up', 85],
+      ['.about-tech-stack', '.about-tech-chip', 'scale', 42],
+      ['.trajectory-timeline', '.trajectory-item', 'right', 75],
+    ].forEach(([groupSelector, itemSelector, direction, step]) => {
+      document.querySelectorAll(groupSelector).forEach((group) => {
+        group.querySelectorAll(itemSelector).forEach((element, index) => {
+          addRevealItem(element, direction, index * step);
+        });
+      });
+    });
+
+    const revealVisibleItems = () => {
+      const viewportLimit = window.innerHeight * 0.94;
+
+      revealItems.forEach((item) => {
+        if (item.classList.contains('is-visible')) return;
+
+        const rect = item.getBoundingClientRect();
+        if (rect.top <= viewportLimit && rect.bottom >= 0) {
+          item.classList.add('is-visible');
+          revealObserver?.unobserve(item);
+        }
+      });
+    };
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      revealItems.forEach((item) => item.classList.add('is-visible'));
+    } else {
+      revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              revealObserver?.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          rootMargin: '0px 0px -12% 0px',
+          threshold: 0.12,
+        }
+      );
+
+      revealItems.forEach((item) => revealObserver.observe(item));
+      revealVisibleItems();
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (revealSyncFrame) return;
+
+          revealSyncFrame = window.requestAnimationFrame(() => {
+            revealSyncFrame = 0;
+            revealVisibleItems();
+          });
+        },
+        { passive: true }
+      );
+      window.addEventListener('resize', revealVisibleItems);
+    }
+
+    if (target && reduceMotion) {
+      target.textContent = roles[0];
+    } else if (target) {
+      let roleIndex = 0;
+      let charIndex = 0;
+      let deleting = false;
+
+      const tick = () => {
+        const role = roles[roleIndex];
+        if (typewriter instanceof HTMLElement) {
+          typewriter.dataset.roleStyle = roleStyles[roleIndex];
+        }
+
+        target.textContent = role.slice(0, charIndex);
+
+        if (!deleting) {
+          if (charIndex < role.length) {
+            charIndex += 1;
+            setTimeout(tick, 72);
+            return;
+          }
+
+          deleting = true;
+          setTimeout(tick, 1400);
+          return;
+        }
+
+        if (charIndex > 0) {
+          charIndex -= 1;
+          setTimeout(tick, 42);
+          return;
+        }
+
+        deleting = false;
+        roleIndex = (roleIndex + 1) % roles.length;
+        setTimeout(tick, 260);
+      };
+
+      tick();
+    }
+
+    document.querySelectorAll('[data-copy-email]').forEach((copyButton) => {
+      copyButton.addEventListener('click', async (event) => {
+        const button = event.currentTarget;
+        const email = button instanceof HTMLElement ? button.dataset.copyEmail : '';
+
+        if (!email || !(button instanceof HTMLElement)) return;
+
+        try {
+          await navigator.clipboard.writeText(email);
+          const label = button.dataset.tooltip;
+          const textTarget = button.querySelector('[data-copy-label]');
+          const textLabel = textTarget?.textContent;
+          button.dataset.tooltip = copyLabels.copiedTooltip;
+          if (textTarget) textTarget.textContent = copyLabels.copiedText;
+          window.setTimeout(() => {
+            button.dataset.tooltip = label || copyLabels.resetTooltip;
+            if (textTarget && textLabel) textTarget.textContent = textLabel;
+          }, 1300);
+        } catch {
+          button.dataset.tooltip = copyLabels.failedTooltip;
+        }
+      });
+    });
+
+    const socialsDock = document.querySelector('[data-hero-socials-dock]');
+    const socials = document.querySelector('[data-hero-socials]');
+    const navSocials = document.querySelector('[data-nav-socials]');
+    const siteHeader = document.querySelector('[data-site-header]');
+    let socialsTrigger = 0;
+
+    const updateSocialsTrigger = () => {
+      if (!(socialsDock instanceof HTMLElement)) return;
+
+      const navbarOffset = 16;
+      socialsTrigger = socialsDock.getBoundingClientRect().top + window.scrollY - navbarOffset;
+    };
+
+    const updateSocialsDock = () => {
+      if (!(socials instanceof HTMLElement) || !(navSocials instanceof HTMLElement)) return;
+
+      const isDocked = window.scrollY >= socialsTrigger;
+      socials.classList.toggle('is-hidden-by-nav', isDocked);
+      navSocials.classList.toggle('is-visible', isDocked);
+      siteHeader?.classList.toggle('has-docked-socials', isDocked);
+      socials.setAttribute('aria-hidden', String(isDocked));
+      navSocials.setAttribute('aria-hidden', String(!isDocked));
+    };
+
+    if (socialsDock && socials && navSocials) {
+      updateSocialsTrigger();
+      updateSocialsDock();
+      window.addEventListener('scroll', updateSocialsDock, { passive: true });
+      window.addEventListener('resize', () => {
+        updateSocialsTrigger();
+        updateSocialsDock();
+      });
+    }
+
+    const activateSelectorTab = (tab) => {
+      const group = tab.closest('[data-selector-group]');
+      if (!group) return;
+
+      const tabs = Array.from(group.querySelectorAll('[data-selector-tab]'));
+      const activePanel = tab.getAttribute('aria-controls');
+      const panels = tabs
+        .map((item) => document.getElementById(item.getAttribute('aria-controls') || ''))
+        .filter(Boolean);
+
+      tabs.forEach((item) => {
+        const isActive = item === tab;
+        item.classList.toggle('is-active', isActive);
+        item.setAttribute('aria-selected', String(isActive));
+      });
+
+      panels.forEach((panel) => {
+        panel?.classList.toggle('is-active', panel.id === activePanel);
+      });
+
+      window.requestAnimationFrame(revealVisibleItems);
+    };
+
+    document.querySelectorAll('[data-selector-tab]').forEach((tab) => {
+      tab.addEventListener('click', () => activateSelectorTab(tab));
+    });
+
+    document.querySelectorAll('[data-featured-project-target]').forEach((featuredProject) => {
+      featuredProject.addEventListener('click', () => {
+        if (!(featuredProject instanceof HTMLElement)) return;
+
+        const technologyId = featuredProject.dataset.technologyTarget;
+        const projectId = featuredProject.dataset.featuredProjectTarget;
+        const technologyTab = document.querySelector(`[data-selector-tab][aria-controls="${technologyId}"]`);
+
+        if (technologyTab instanceof HTMLElement) {
+          activateSelectorTab(technologyTab);
+        }
+
+        window.requestAnimationFrame(() => {
+          const projectCard = projectId ? document.getElementById(projectId) : null;
+          const fallbackPanel = technologyId ? document.getElementById(technologyId) : null;
+          const scrollTarget = projectCard || fallbackPanel;
+
+          scrollTarget?.scrollIntoView({
+            behavior: reduceMotion ? 'auto' : 'smooth',
+            block: 'center',
+          });
+
+          if (projectCard instanceof HTMLElement) {
+            projectCard.classList.add('is-highlighted');
+            projectCard.focus({ preventScroll: true });
+            window.setTimeout(() => {
+              projectCard.classList.remove('is-highlighted');
+            }, 1600);
+          }
+        });
+      });
+    });
+
+    document.querySelectorAll('[data-carousel]').forEach((carousel) => {
+      const slides = Array.from(carousel.querySelectorAll('[data-carousel-slide]'));
+      const dots = Array.from(carousel.querySelectorAll('[data-carousel-dot]'));
+      const thumbnails = Array.from(carousel.querySelectorAll('[data-carousel-thumb]'));
+      const previous = carousel.querySelector('[data-carousel-prev]');
+      const next = carousel.querySelector('[data-carousel-next]');
+      let activeIndex = 0;
+
+      const pauseHiddenVideos = () => {
+        slides.forEach((slide) => {
+          if (!slide.classList.contains('is-active')) {
+            slide.querySelectorAll('video').forEach((video) => video.pause());
+          }
+        });
+      };
+
+      const setActiveSlide = (index) => {
+        activeIndex = (index + slides.length) % slides.length;
+        slides.forEach((slide, slideIndex) => {
+          slide.classList.toggle('is-active', slideIndex === activeIndex);
+        });
+        dots.forEach((dot, dotIndex) => {
+          dot.classList.toggle('is-active', dotIndex === activeIndex);
+        });
+        thumbnails.forEach((thumbnail, thumbnailIndex) => {
+          thumbnail.classList.toggle('is-active', thumbnailIndex === activeIndex);
+        });
+        pauseHiddenVideos();
+      };
+
+      previous?.addEventListener('click', () => setActiveSlide(activeIndex - 1));
+      next?.addEventListener('click', () => setActiveSlide(activeIndex + 1));
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => setActiveSlide(index));
+      });
+      thumbnails.forEach((thumbnail, index) => {
+        thumbnail.addEventListener('click', () => setActiveSlide(index));
+      });
+    });
+
+    document.querySelectorAll('[data-sequence-viewer]').forEach((viewer) => {
+      if (!(viewer instanceof HTMLElement)) return;
+
+      const frames = Array.from(viewer.querySelectorAll('[data-sequence-frame]'));
+      const slider = viewer.querySelector('[data-sequence-slider]');
+      const previousFrame = viewer.querySelector('[data-sequence-prev]');
+      const nextFrame = viewer.querySelector('[data-sequence-next]');
+      const lightboxButton = viewer.querySelector('[data-open-lightbox]');
+      const sequenceInterval = Number(viewer.dataset.sequenceInterval || 560);
+      const playbackDelay = Number.isFinite(sequenceInterval) && sequenceInterval > 0 ? sequenceInterval : 560;
+      let frameIndex = 0;
+      let timer = 0;
+
+      const setFrame = (index) => {
+        frameIndex = (index + frames.length) % frames.length;
+        frames.forEach((frame, currentIndex) => {
+          frame.classList.toggle('is-active', currentIndex === frameIndex);
+        });
+
+        if (slider instanceof HTMLInputElement) {
+          slider.value = String(frameIndex);
+        }
+
+        const activeFrame = frames[frameIndex];
+        if (activeFrame instanceof HTMLImageElement) {
+          const activeSource = activeFrame.currentSrc || activeFrame.src;
+          viewer.dataset.lightboxSrc = activeSource;
+
+          if (lightboxButton instanceof HTMLElement) {
+            lightboxButton.dataset.lightboxSrc = activeSource;
+          }
+        }
+      };
+
+      const clearPlayback = () => {
+        window.clearInterval(timer);
+      };
+
+      const stop = () => {
+        clearPlayback();
+        viewer.classList.add('is-paused');
+      };
+
+      const play = () => {
+        clearPlayback();
+        viewer.classList.remove('is-paused');
+        timer = window.setInterval(() => setFrame(frameIndex + 1), playbackDelay);
+      };
+
+      viewer.addEventListener('mouseenter', stop);
+      viewer.addEventListener('pointerenter', stop);
+      viewer.addEventListener('mousemove', stop);
+      viewer.addEventListener('pointermove', stop);
+
+      const restartSequence = () => {
+        clearPlayback();
+        viewer.classList.remove('is-paused');
+        setFrame(0);
+        if (!reduceMotion) {
+          play();
+        }
+      };
+
+      viewer.addEventListener('mouseleave', restartSequence);
+      viewer.addEventListener('pointerleave', restartSequence);
+
+      slider?.addEventListener('input', () => {
+        if (slider instanceof HTMLInputElement) {
+          stop();
+          setFrame(Number(slider.value));
+        }
+      });
+
+      previousFrame?.addEventListener('click', () => {
+        stop();
+        setFrame(frameIndex - 1);
+      });
+
+      nextFrame?.addEventListener('click', () => {
+        stop();
+        setFrame(frameIndex + 1);
+      });
+
+      if (!reduceMotion) {
+        play();
+      } else {
+        viewer.classList.add('is-paused');
+      }
+    });
+
+    const lightbox = document.querySelector('[data-media-lightbox]');
+    const lightboxBody = document.querySelector('[data-media-lightbox-body]');
+    const closeLightbox = () => {
+      if (!(lightbox instanceof HTMLElement) || !(lightboxBody instanceof HTMLElement)) return;
+
+      lightbox.hidden = true;
+      lightboxBody.replaceChildren();
+      document.documentElement.classList.remove('has-lightbox');
+    };
+
+    const openLightbox = (source, type, alt) => {
+      if (!(lightbox instanceof HTMLElement) || !(lightboxBody instanceof HTMLElement) || !source) return;
+
+      lightboxBody.replaceChildren();
+
+      if (type === 'video') {
+        const video = document.createElement('video');
+        video.src = source;
+        video.controls = true;
+        video.autoplay = true;
+        video.playsInline = true;
+        video.setAttribute('aria-label', alt || 'Video ampliado');
+        lightboxBody.append(video);
+      } else {
+        const image = document.createElement('img');
+        image.src = source;
+        image.alt = alt || '';
+        lightboxBody.append(image);
+      }
+
+      lightbox.hidden = false;
+      document.documentElement.classList.add('has-lightbox');
+    };
+
+    document.querySelectorAll('[data-media-zoom-target]').forEach((zoomTarget) => {
+      zoomTarget.addEventListener('dblclick', (event) => {
+        if (!(zoomTarget instanceof HTMLElement)) return;
+
+        if (event.target instanceof Element && event.target.closest('button, a, input, video, [data-open-lightbox]')) {
+          return;
+        }
+
+        const rect = zoomTarget.getBoundingClientRect();
+        const zoomX = rect.width > 0 ? ((event.clientX - rect.left) / rect.width) * 100 : 50;
+        const zoomY = rect.height > 0 ? ((event.clientY - rect.top) / rect.height) * 100 : 50;
+        zoomTarget.style.setProperty('--zoom-x', `${Math.min(100, Math.max(0, zoomX))}%`);
+        zoomTarget.style.setProperty('--zoom-y', `${Math.min(100, Math.max(0, zoomY))}%`);
+        zoomTarget.classList.toggle('is-zoomed');
+      });
+    });
+
+    document.querySelectorAll('[data-open-lightbox]').forEach((openButton) => {
+      openButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!(openButton instanceof HTMLElement)) return;
+
+        openLightbox(openButton.dataset.lightboxSrc, openButton.dataset.lightboxType, openButton.dataset.lightboxAlt);
+      });
+    });
+
+    document.querySelectorAll('[data-media-lightbox-close]').forEach((closeButton) => {
+      closeButton.addEventListener('click', closeLightbox);
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+  </script>
+</BaseLayout>
