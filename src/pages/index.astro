@@ -563,7 +563,7 @@ const timelineItems = [
 
         <p class="hero-typewriter" data-role-style="technical" aria-live="polite">
           <span class="hero-typewriter-prompt" aria-hidden="true">&gt;</span>
-          <span data-role-typewriter></span>
+          <span data-role-typewriter>Technical Artist</span>
           <span class="hero-typewriter-caret" aria-hidden="true"></span>
         </p>
 
@@ -1054,6 +1054,47 @@ const timelineItems = [
     const typewriter = target?.closest('.hero-typewriter');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    if (target && reduceMotion) {
+      target.textContent = roles[0];
+    } else if (target) {
+      let roleIndex = 0;
+      let charIndex = 0;
+      let deleting = false;
+
+      const tick = () => {
+        const role = roles[roleIndex];
+        if (typewriter instanceof HTMLElement) {
+          typewriter.dataset.roleStyle = roleStyles[roleIndex];
+        }
+
+        target.textContent = role.slice(0, charIndex);
+
+        if (!deleting) {
+          if (charIndex < role.length) {
+            charIndex += 1;
+            setTimeout(tick, 72);
+            return;
+          }
+
+          deleting = true;
+          setTimeout(tick, 1400);
+          return;
+        }
+
+        if (charIndex > 0) {
+          charIndex -= 1;
+          setTimeout(tick, 42);
+          return;
+        }
+
+        deleting = false;
+        roleIndex = (roleIndex + 1) % roles.length;
+        setTimeout(tick, 260);
+      };
+
+      tick();
+    }
+
     const heroShell = document.querySelector('.hero-shell');
     let scrollMotionFrame = 0;
 
@@ -1167,47 +1208,6 @@ const timelineItems = [
         { passive: true }
       );
       window.addEventListener('resize', revealVisibleItems);
-    }
-
-    if (target && reduceMotion) {
-      target.textContent = roles[0];
-    } else if (target) {
-      let roleIndex = 0;
-      let charIndex = 0;
-      let deleting = false;
-
-      const tick = () => {
-        const role = roles[roleIndex];
-        if (typewriter instanceof HTMLElement) {
-          typewriter.dataset.roleStyle = roleStyles[roleIndex];
-        }
-
-        target.textContent = role.slice(0, charIndex);
-
-        if (!deleting) {
-          if (charIndex < role.length) {
-            charIndex += 1;
-            setTimeout(tick, 72);
-            return;
-          }
-
-          deleting = true;
-          setTimeout(tick, 1400);
-          return;
-        }
-
-        if (charIndex > 0) {
-          charIndex -= 1;
-          setTimeout(tick, 42);
-          return;
-        }
-
-        deleting = false;
-        roleIndex = (roleIndex + 1) % roles.length;
-        setTimeout(tick, 260);
-      };
-
-      tick();
     }
 
     document.querySelectorAll('[data-copy-email]').forEach((copyButton) => {
