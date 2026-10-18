@@ -1,0 +1,280 @@
+---
+import { DATA, SLOTS_PER_SECTION, WEB_ENABLED, type ModeKey, type Project } from '../data/portfolio';
+
+interface Props {
+  mode: ModeKey;
+}
+
+const { mode } = Astro.props;
+const d = DATA[mode];
+const pad = (n: number) => String(n).padStart(2, '0');
+const CV = '/assets/FernandoCortes_CV.pdf';
+
+const GUN = [
+  '.##############.',
+  '################',
+  '################',
+  '........#..#####',
+  '.........##.####',
+  '...........#####',
+  '...........####.',
+  '..........#####.',
+]
+  .join('')
+  .split('')
+  .map((c) => c === '#');
+
+const cardInfo = (p: Project) => {
+  const media = p.media ?? [];
+  const hasVideo = !!p.yt || media[0]?.type === 'video';
+  return {
+    thumb: p.img ?? `https://i.ytimg.com/vi/${p.yt}/maxresdefault.jpg`,
+    fallback: p.yt ? `https://i.ytimg.com/vi/${p.yt}/hqdefault.jpg` : undefined,
+    badge: hasVideo ? '▶ play' : media.length > 1 ? `view · ${media.length}` : 'view',
+    source: p.yt ? 'youtube' : media.some((m) => m.type === 'video') ? 'video' : media.length > 1 ? 'gallery' : 'image',
+  };
+};
+
+const sections = d.sections.map((s, i) => {
+  const projects = s.projects ?? [];
+  return {
+    ...s,
+    n: pad(i + 1),
+    count: `${projects.length} ${projects.length === 1 ? 'project' : 'projects'}`,
+    projects: projects.map((p, j) => ({ ...p, ...cardInfo(p), n: pad(j + 1), pid: `${s.id}-${j + 1}` })),
+    slots: projects.length ? [] : Array.from({ length: SLOTS_PER_SECTION }, (_, j) => pad(j + 1)),
+  };
+});
+
+// Modal payload, keyed by card id.
+const payload = Object.fromEntries(
+  sections.flatMap((s) => s.projects.map((p) => [p.pid, { title: p.title, yt: p.yt, media: p.media }])),
+);
+const payloadJson = JSON.stringify(payload).replace(/</g, '\\u003c');
+---
+
+<canvas class="grid-bg" data-grid aria-hidden="true"></canvas>
+
+<div class="fc" data-fc data-hue={d.hue}>
+  <aside class="profile">
+    <div class="profile-top">
+      <span>~/fernando</span><span data-clock>--:--:--</span>
+    </div>
+
+    <div class="photo">
+      <img src="/media/fernando-cortes.jpg" alt="Fernando Daniel Martínez Cortés" width="809" height="613" />
+    </div>
+
+    <div class="who">
+      <h1>Fernando Daniel Martínez Cortés</h1>
+      <div class="acc">&gt; {d.role}</div>
+      <p>{d.bio}</p>
+    </div>
+
+    <div class="block">
+      <div class="label">// contact</div>
+      <div class="contact">
+        <span class="muted">loc</span><span>Guanajuato, MX · UTC-6</span>
+        <span class="muted">status</span><span class="acc">open to remote</span>
+        <span class="muted">mail</span><a href="mailto:ferdevcortes@gmail.com" class="break">ferdevcortes@gmail.com</a>
+        <span class="muted">github</span><a href="https://github.com/TaCodeC" target="_blank" rel="noreferrer">TaCodeC</a>
+        <span class="muted">linkedin</span><a href="https://linkedin.com/in/fernandocortesdev" target="_blank" rel="noreferrer">fernandocortesdev</a>
+      </div>
+    </div>
+
+    <div class="block block-8">
+      <div class="label">// stack</div>
+      <div class="chips">
+        {d.stack.map((t) => <span class="chip">{t}</span>)}
+      </div>
+    </div>
+
+    <div class="block block-8" data-exp>
+      <div class="exp-head">
+        <div class="label">// experience.log</div>
+        <button class="exp-toggle" type="button" data-exp-toggle aria-expanded="false" aria-controls="exp-list">
+          <span class="exp-q">?</span>
+          <span data-exp-label>info</span>
+        </button>
+      </div>
+      <div class="exp-list" id="exp-list">
+        {
+          d.exp.map((e) => (
+            <div class="exp">
+              <span class="strong">{e.role}</span>
+              <span class="exp-org">{e.org}</span>
+              <span class="exp-date">{e.date}</span>
+              <ul class="exp-info">
+                {e.info.map((b) => (
+                  <li>
+                    <span class="y">›</span>
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="block edu">
+      <div class="label">// education</div>
+      <span>B.A. Digital Arts · Universidad de Guanajuato</span>
+      <span class="muted small">Expected Dec 2026 · GPA 9.4/10</span>
+    </div>
+
+    <div class="cv">
+      <a class="btn btn-cv" href={CV} download="FernandoCortes_CV.pdf">↓ download_cv.pdf</a>
+      <a class="btn-ghost" href={CV} target="_blank" rel="noreferrer">view</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <nav class="modes" aria-label="Portfolio mode">
+        <a href="/" class:list={[{ active: mode === 'unity' }]} aria-current={mode === 'unity' ? 'page' : undefined}>/unity-techart</a>
+        {WEB_ENABLED && <a href="/WebDeveloping/" class:list={[{ active: mode === 'web' }]} aria-current={mode === 'web' ? 'page' : undefined}>/WebDeveloping</a>}
+      </nav>
+      <div class="top-right">
+        <button class="theme-toggle" type="button" data-theme-toggle>theme: <span data-theme-label>dark</span></button>
+        <div class="hud">
+          <span>cursor <span class="hud-val" data-hud-coord>0000,0000</span></span>
+          <span>hue <span class="hud-val" data-hud-hue>000</span></span>
+        </div>
+      </div>
+    </header>
+
+    <div class="hero">
+      <div class="muted">$ cd ~/work/{d.slug} &amp;&amp; ls</div>
+      <h2>
+        <span class="title-a">{d.titleA}</span>
+        <span class="muted">|</span>
+        <span class="title-b">{d.titleB}</span>
+      </h2>
+      <p class="headline">{d.headline}</p>
+      <nav class="jump" aria-label="Sections">
+        <span class="muted">Go to -&gt;</span>
+        {
+          sections.map((s) => (
+            <a href={`#${s.id}`}>
+              <span class="acc">{s.n}/</span> {s.title}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+
+    {
+      sections.map((s) => (
+        <section id={s.id} class="section">
+          <div class="section-head">
+            <span class="acc">{s.n}/</span>
+            <h3>{s.title}</h3>
+            <span class="section-note">// {s.note}</span>
+            <span class="section-count">[{s.count}]</span>
+          </div>
+          <div class="grid">
+            {s.projects.map((p) => (
+              <article class="card" data-card data-pid={p.pid}>
+                <div class="card-thumb" role="button" tabindex="0" data-card-open aria-label={`Open ${p.title}`}>
+                  <img
+                    src={p.thumb}
+                    alt={p.title}
+                    loading="lazy"
+                    decoding="async"
+                    data-fallback={p.fallback}
+                    onload={p.fallback ? "if(this.naturalWidth<=120&&this.dataset.fallback){this.src=this.dataset.fallback;delete this.dataset.fallback}" : undefined}
+                    onerror={p.fallback ? "if(this.dataset.fallback){this.src=this.dataset.fallback;delete this.dataset.fallback}" : undefined}
+                  />
+                  <span class="badge badge-play">{p.badge}</span>
+                  <span class="badge badge-kind">{p.kind}</span>
+                </div>
+                <div class="card-body">
+                  <div class="card-meta">
+                    <span>PRJ_{s.n}{p.n}</span>
+                    <span>{p.source}</span>
+                  </div>
+                  <div class="card-title">{p.title}</div>
+                  <div class="card-desc">{p.desc}</div>
+                  {p.links && (
+                    <div class="card-links">
+                      {p.links.map((l) => (
+                        <a class="btn btn-sm" href={l.href} target="_blank" rel="noreferrer">
+                          {l.label}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                  <div class="tags">
+                    {p.tags.map((t) => (
+                      <span class="tag">{t}</span>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))}
+            {s.slots.map((n) => (
+              <article class="card card-slot">
+                <div class="slot-thumb">
+                  <span>project thumbnail / gif</span>
+                </div>
+                <div class="card-body card-body-slot">
+                  <div class="card-meta">
+                    <span>PRJ_{s.n}{n}</span>
+                    <span>----</span>
+                  </div>
+                  <div class="card-title">untitled_project</div>
+                  <div class="y small">// TODO: title, stack, link</div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+
+    <footer class="foot">
+      <span>© 2026 Fernando Cortés · fernandocortes.dev</span>
+      <span>EOF</span>
+    </footer>
+  </main>
+</div>
+
+<div class="modal" data-modal data-noshoot hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <span id="modal-title">&gt; <span data-modal-title></span></span>
+      <div class="modal-actions">
+        <a class="modal-link" data-modal-ext target="_blank" rel="noreferrer">youtube ↗</a>
+        <button class="modal-close" type="button" data-modal-close>close · esc</button>
+      </div>
+    </div>
+    <div class="modal-stage" data-modal-stage></div>
+    <div class="modal-nav" data-modal-nav hidden>
+      <button class="modal-link" type="button" data-modal-prev aria-label="Previous">‹ prev</button>
+      <span class="modal-caption" data-modal-caption></span>
+      <span data-modal-count></span>
+      <button class="modal-link" type="button" data-modal-next aria-label="Next">next ›</button>
+    </div>
+  </div>
+</div>
+
+<div class="fx" data-fx data-noshoot></div>
+<div class="gun-widget" data-gun-widget data-noshoot>
+  <div class="gun" data-gun title="Pick up the gun">
+    {GUN.map((on) => <span class:list={[{ on }]} />)}
+    <div class="gun-flash" data-gun-flash></div>
+    <span class="gun-label" data-gun-label>Try it!</span>
+  </div>
+  <div class="gun-ctrls" data-gun-ctrls hidden>
+    <button class="btn" type="button" data-gun-reload>↺ reload</button>
+    <button class="btn-ghost" type="button" data-gun-exit>exit · esc</button>
+  </div>
+</div>
+
+<script type="application/json" id="fc-projects" set:html={payloadJson} />
+
+<script>
+  import '../scripts/portfolio';
+</script>

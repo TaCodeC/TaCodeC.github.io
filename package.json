@@ -11,10 +11,7 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.1",
-    "astro": "^7.0.2",
-    "tailwindcss": "^4.3.1",
-    "three": "^0.184.0"
+    "astro": "^7.0.2"
   },
   "repository": {
     "type": "git",
@@ -23,7 +20,7 @@
   "keywords": [
     "portfolio",
     "technical-artist",
-    "threejs",
+    "unity",
     "webgl",
     "shaders"
   ],

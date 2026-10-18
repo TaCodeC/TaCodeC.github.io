@@ -1,25 +1,38 @@
 ---
 import '../styles/global.css';
 
-const {
-  title = 'Fernando Cortés - Technical Artist',
-  description = 'Portafolio de Fernando Cortes: arte tecnico, shaders, Unity, OpenGL, modelado y experiencias interactivas.',
-} = Astro.props;
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#101113" />
-    <link rel="icon" href="/media/tacodec-github-avatar.png" type="image/png" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/media/fernando-cortes.jpg', Astro.site)} />
+    <meta name="theme-color" content="#0a0b0d" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/Monocraft.ttf" as="font" type="font/ttf" crossorigin />
     <title>{title}</title>
+    <script is:inline>
+      try {
+        var t = localStorage.getItem('fc-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <slot />
