@@ -84,11 +84,13 @@ export const DATA: Record<ModeKey, ModeData> = {
       { role: 'AR Developer', org: 'Universidad de Guanajuato, DICIS', date: 'Jan 2026 – Jun 2026', info: ['Built an interactive outreach app for university career fairs, run on-site by non-technical staff.'] },
     ],
     sections: [
-      { id: 'vfx', title: 'vfx_&_cinematics', note: 'URP, HDRP, VFX Graph, timeline', projects: [
+      { id: 'cinematics', title: 'cinematics', note: 'HDRP, URP, timeline, cameras', projects: [
         { yt: 'n7X-pvLMr8U', kind: 'cinematic', title: 'Kriemhild Gretchen | Interpretive Cinematic (Unity HDRP)', desc: 'Interpretive Kriemhild Gretchen cinematic: procedural model scaling, glitch and mist shaders, custom lighting, set and camera work.', tags: ['HDRP', 'Shaders', 'Lighting', 'Cameras'] },
-        { ig: 'https://www.instagram.com/reel/DfBaB8wtLHK/', kind: 'reel', img: '/work/portal-bubbles/thumb.jpg', title: 'Portal Bubbles', desc: 'Portal bubbles recreated in Unity from a Blender concept, for the continuation of the Kriemhild reel.', tags: ['Unity VFX', 'Portals', 'Kriemhild'] },
         { yt: 'RcN1iPYncfM', kind: 'cinematic', title: 'Zelda: URP Cinematic', desc: 'Cannon beam, a reactive and destructible shield, and a procedural cinematic synced beat by beat to in-game music. Zelda uses IK and a custom camera.', tags: ['URP', 'VFX', 'IK', 'Custom camera'] },
         { yt: 'lanOS08ilwI', kind: 'cinematic', title: 'Hammer of Dawn: Cinematic', desc: 'Cinematic interpretation of the Hammer of Dawn attack from Gears of War.', tags: ['Cinematic', 'VFX'] },
+      ] },
+      { id: 'vfx', title: 'vfx', note: 'real-time effects, VFX Graph, HLSL', projects: [
+        { ig: 'https://www.instagram.com/reel/DfBaB8wtLHK/', kind: 'reel', img: '/work/portal-bubbles/thumb.jpg', title: 'Portal Bubbles', desc: 'Portal bubbles recreated in Unity from a Blender concept, for the continuation of the Kriemhild reel.', tags: ['Unity VFX', 'Portals', 'Kriemhild'] },
         { yt: 'G93O6hxvWB8', kind: 'real-time', img: '/assets/hammer-beam.jpg', title: 'Hammer of Dawn: Beam & Destruction', desc: 'Real-time Hammer of Dawn attack: beam strike and building destruction.', tags: ['Real-time', 'VFX', 'Destruction'] },
         { yt: 'T_bsac0WFsM', kind: 'real-time', img: '/assets/hammer-sky.jpg', title: 'Hammer of Dawn: Burned Atmosphere', desc: 'Hammer of Dawn attack with a burned-atmosphere sky effect.', tags: ['Real-time', 'Sky FX', 'Shaders'] },
       ] },
