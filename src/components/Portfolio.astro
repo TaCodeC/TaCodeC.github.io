@@ -26,12 +26,12 @@ const GUN = [
 
 const cardInfo = (p: Project) => {
   const media = p.media ?? [];
-  const hasVideo = !!p.yt || media[0]?.type === 'video';
+  const hasVideo = !!p.yt || !!p.ig || media[0]?.type === 'video';
   return {
     thumb: p.img ?? `https://i.ytimg.com/vi/${p.yt}/maxresdefault.jpg`,
-    fallback: p.yt ? `https://i.ytimg.com/vi/${p.yt}/hqdefault.jpg` : undefined,
+    fallback: p.yt && !p.img ? `https://i.ytimg.com/vi/${p.yt}/hqdefault.jpg` : undefined,
     badge: hasVideo ? '▶ play' : media.length > 1 ? `view · ${media.length}` : 'view',
-    source: p.yt ? 'youtube' : media.some((m) => m.type === 'video') ? 'video' : media.length > 1 ? 'gallery' : 'image',
+    source: p.yt ? 'youtube' : p.ig ? 'instagram' : media.some((m) => m.type === 'video') ? 'video' : media.length > 1 ? 'gallery' : 'image',
   };
 };
 
@@ -48,7 +48,7 @@ const sections = d.sections.map((s, i) => {
 
 // Modal payload, keyed by card id.
 const payload = Object.fromEntries(
-  sections.flatMap((s) => s.projects.map((p) => [p.pid, { title: p.title, yt: p.yt, media: p.media }])),
+  sections.flatMap((s) => s.projects.map((p) => [p.pid, { title: p.title, yt: p.yt, ig: p.ig, media: p.media }])),
 );
 const payloadJson = JSON.stringify(payload).replace(/</g, '\\u003c');
 ---
@@ -79,6 +79,7 @@ const payloadJson = JSON.stringify(payload).replace(/</g, '\\u003c');
         <span class="muted">mail</span><a href="mailto:ferdevcortes@gmail.com" class="break">ferdevcortes@gmail.com</a>
         <span class="muted">github</span><a href="https://github.com/TaCodeC" target="_blank" rel="noreferrer">TaCodeC</a>
         <span class="muted">linkedin</span><a href="https://linkedin.com/in/fernandocortesdev" target="_blank" rel="noreferrer">fernandocortesdev</a>
+        <span class="muted">instagram</span><a href="https://www.instagram.com/fdanmc/" target="_blank" rel="noreferrer">fdanmc</a>
       </div>
     </div>
 

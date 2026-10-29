@@ -19,6 +19,8 @@ export interface Project {
   kind: string;
   /** YouTube id: the card opens the YouTube modal. */
   yt?: string;
+  /** Instagram post or reel URL: the card opens the Instagram embed. */
+  ig?: string;
   /** Card thumbnail; defaults to the YouTube thumbnail. */
   img?: string;
   /** Local media: the card opens the gallery modal. */
@@ -84,6 +86,7 @@ export const DATA: Record<ModeKey, ModeData> = {
     sections: [
       { id: 'vfx', title: 'vfx_&_cinematics', note: 'URP, HDRP, VFX Graph, timeline', projects: [
         { yt: 'n7X-pvLMr8U', kind: 'cinematic', title: 'Kriemhild Gretchen | Interpretive Cinematic (Unity HDRP)', desc: 'Interpretive Kriemhild Gretchen cinematic: procedural model scaling, glitch and mist shaders, custom lighting, set and camera work.', tags: ['HDRP', 'Shaders', 'Lighting', 'Cameras'] },
+        { ig: 'https://www.instagram.com/reel/DfBaB8wtLHK/', kind: 'reel', img: '/work/portal-bubbles/thumb.jpg', title: 'Portal Bubbles', desc: 'Portal bubbles recreated in Unity from a Blender concept, for the continuation of the Kriemhild reel.', tags: ['Unity VFX', 'Portals', 'Kriemhild'] },
         { yt: 'RcN1iPYncfM', kind: 'cinematic', title: 'Zelda: URP Cinematic', desc: 'Cannon beam, a reactive and destructible shield, and a procedural cinematic synced beat by beat to in-game music. Zelda uses IK and a custom camera.', tags: ['URP', 'VFX', 'IK', 'Custom camera'] },
         { yt: 'lanOS08ilwI', kind: 'cinematic', title: 'Hammer of Dawn: Cinematic', desc: 'Cinematic interpretation of the Hammer of Dawn attack from Gears of War.', tags: ['Cinematic', 'VFX'] },
         { yt: 'G93O6hxvWB8', kind: 'real-time', img: '/assets/hammer-beam.jpg', title: 'Hammer of Dawn: Beam & Destruction', desc: 'Real-time Hammer of Dawn attack: beam strike and building destruction.', tags: ['Real-time', 'VFX', 'Destruction'] },
@@ -91,6 +94,7 @@ export const DATA: Record<ModeKey, ModeData> = {
       ] },
       { id: 'shaders', title: 'shaders_&_rendering', note: 'HLSL, URP, custom passes', projects: [
         { yt: 'HvoIC2wcSL4', kind: 'real-time', img: '/assets/granted-wish.jpg', title: 'Granted Wish', desc: 'Ray-traced water, responsive drizzle, volumetric fog and clouds, and a custom skybox.', tags: ['Ray-traced water', 'Volumetrics', 'Skybox'] },
+        { ig: 'https://www.instagram.com/p/DfDxSIjkaIo/', kind: 'fan art', img: '/work/lancer-skins/thumb.jpg', title: 'Lancer Skins', desc: 'Gears of War Lancer skins fan art: a small VFX and shader study made with Shader Graph and VFX Graph in Unity.', tags: ['Fan art', 'Gears of War', 'Weapon skins'] },
       ] },
       { id: 'xr', title: 'xr_/_vr', note: 'Quest, mobile VR, AR', projects: [
         { yt: 'NvtyiGGKYJ8', kind: 'trailer', title: 'Sentinela: VR Game Trailer', desc: 'VR game developed for and in collaboration with ISAPEG Guanajuato. Lead programmer, technical artist, and implementation of features and interactions.', tags: ['VR', 'Lead programmer', 'Tech art', 'Interactions'] },
@@ -115,13 +119,6 @@ export const DATA: Record<ModeKey, ModeData> = {
             { type: 'video', src: '/work/la-llorona/gameplay.mp4', poster: '/work/la-llorona/thumb.jpg', caption: 'Gameplay' },
             ...images([1, 2, 3, 4, 5].map((n) => `/work/la-llorona/shot-${n}.jpg`), (i) => `Screenshot 0${i + 1}`),
           ],
-        },
-        {
-          kind: '2d game', title: 'Drowned', img: '/work/drowned/thumb.jpg',
-          desc: '2D shooter with three levels, mini-bosses and a water shader built in Shader Graph.',
-          tags: ['2D shooter', 'Shader Graph', '3 levels', 'Mini-bosses'],
-          media: [{ type: 'image', src: '/work/drowned/drowned-menu.jpg', caption: 'Main menu' }],
-          links: [{ label: '▶ play on itch.io ↗', href: 'https://tacodecrt.itch.io/drowned' }],
         },
       ] },
       { id: 'modeling', title: 'modeling_&_rigging', note: 'Maya, hard surface, rigging', projects: [

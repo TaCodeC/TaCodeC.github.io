@@ -755,6 +755,11 @@ button {
   gap: 8px;
 }
 
+.modal-link,
+.modal-close {
+  white-space: nowrap;
+}
+
 .modal-link {
   font-size: 12px;
   cursor: pointer;
@@ -785,6 +790,18 @@ button {
   max-height: calc(100svh - 150px);
   background: #000;
   border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-box:has(.is-ig) {
+  width: min(420px, 100%);
+}
+
+.modal-stage.is-ig {
+  width: 100%;
+  height: min(760px, calc(100svh - 150px));
+  aspect-ratio: auto;
+  max-height: none;
+  background: #ffffff;
 }
 
 .modal-stage > * {

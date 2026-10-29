@@ -64,6 +64,7 @@ function initExperience() {
 interface ModalProject {
   title: string;
   yt?: string;
+  ig?: string;
   media?: Media[];
 }
 
@@ -90,15 +91,23 @@ function initModal() {
   const render = () => {
     if (!cur) return;
     stage.replaceChildren();
-    if (cur.yt) {
+    // Instagram embeds are portrait, so the stage switches shape for them.
+    stage.classList.toggle('is-ig', !!cur.ig);
+    if (cur.yt || cur.ig) {
       const f = document.createElement('iframe');
-      f.src = `https://www.youtube-nocookie.com/embed/${cur.yt}?autoplay=1&rel=0`;
       f.title = cur.title;
       f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
       f.allowFullscreen = true;
+      if (cur.yt) {
+        f.src = `https://www.youtube-nocookie.com/embed/${cur.yt}?autoplay=1&rel=0`;
+        ext.href = `https://www.youtube.com/watch?v=${cur.yt}`;
+        ext.textContent = 'youtube ↗';
+      } else {
+        f.src = `${cur.ig}embed/`;
+        ext.href = cur.ig!;
+        ext.textContent = 'instagram ↗';
+      }
       stage.append(f);
-      ext.href = `https://www.youtube.com/watch?v=${cur.yt}`;
-      ext.textContent = 'youtube ↗';
       nav.hidden = true;
       return;
     }
