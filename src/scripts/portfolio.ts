@@ -1,32 +1,27 @@
 import { FS, VS } from './gridShader';
-import type { Media } from '../data/portfolio';
+import type { Media, ProjectLink } from '../data/portfolio';
 
 const CELL_SIZE = 32;
-const INTENSITY = 1;
+const INTENSITY = 0.5;
 const FLICKER = true;
 
 const html = document.documentElement;
 const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) => root.querySelector<T>(sel);
-const pad = (n: number, len = 2) => String(n).padStart(len, '0');
+const pad = (n: number) => String(n).padStart(2, '0');
 const isLight = () => html.dataset.theme === 'light';
 const isArmed = () => html.hasAttribute('data-armed');
 
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const root = $('[data-fc]');
 if (root) {
-  initClock();
   initTheme();
   initExperience();
-  initModal();
+  initSectionNav();
+  initModal(root);
+  initPreviews();
   initGun();
   initGrid(Number(root.dataset.hue) || 0.36);
-}
-
-function initClock() {
-  const el = $('[data-clock]');
-  if (!el) return;
-  const tick = () => (el.textContent = new Date().toTimeString().slice(0, 8));
-  tick();
-  setInterval(tick, 1000);
 }
 
 function initTheme() {
@@ -55,20 +50,70 @@ function initExperience() {
   btn.addEventListener('click', () => {
     const open = block.classList.toggle('exp-open');
     btn.setAttribute('aria-expanded', String(open));
-    if (label) label.textContent = open ? 'less' : 'info';
+    if (label) label.textContent = open ? 'hide details' : 'show details';
   });
 }
 
-/* ---------- project modal (YouTube embed or local gallery) ---------- */
+/** Marks the section nav link for whichever section sits near the top of the viewport. */
+function initSectionNav() {
+  const track = $('[data-jump]');
+  if (!track || !('IntersectionObserver' in window)) return;
+  const links = new Map([...track.querySelectorAll<HTMLAnchorElement>('a')].map((a) => [a.hash.slice(1), a]));
+  const hero = $('.hero');
+  let current: HTMLAnchorElement | undefined;
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        // Back in the hero: no section is current.
+        const a = e.target === hero ? undefined : links.get(e.target.id);
+        if (a === current) continue;
+        current?.removeAttribute('aria-current');
+        current = a;
+        if (!a) continue;
+        a.setAttribute('aria-current', 'location');
+        track.scrollTo({ left: a.offsetLeft - (track.clientWidth - a.offsetWidth) / 2, behavior: reduceMotion ? 'auto' : 'smooth' });
+      }
+    },
+    { rootMargin: '-25% 0px -70% 0px' },
+  );
+  if (hero) io.observe(hero);
+  links.forEach((_, id) => {
+    const s = document.getElementById(id);
+    if (s) io.observe(s);
+  });
+}
+
+/* ---------- project modal: embed, gallery, breakdown and turntable ---------- */
 
 interface ModalProject {
   title: string;
+  desc: string;
+  tags: string[];
+  links?: ProjectLink[];
   yt?: string;
   ig?: string;
   media?: Media[];
+  turntable?: boolean;
 }
 
-function initModal() {
+interface Slide {
+  type: 'youtube' | 'instagram' | 'image' | 'video';
+  src: string;
+  poster?: string;
+  caption?: string;
+}
+
+/** The embed comes first, then any local media (galleries, breakdowns). */
+function slidesOf(p: ModalProject): Slide[] {
+  return [
+    ...(p.yt ? [{ type: 'youtube' as const, src: p.yt, caption: 'video' }] : []),
+    ...(p.ig ? [{ type: 'instagram' as const, src: p.ig, caption: 'post' }] : []),
+    ...(p.media ?? []),
+  ];
+}
+
+function initModal(page: HTMLElement) {
   const modal = $('[data-modal]');
   const stage = $('[data-modal-stage]');
   if (!modal || !stage) return;
@@ -77,7 +122,12 @@ function initModal() {
   const nav = $('[data-modal-nav]')!;
   const caption = $('[data-modal-caption]')!;
   const count = $('[data-modal-count]')!;
+  const desc = $('[data-modal-desc]')!;
+  const linksEl = $('[data-modal-links]')!;
+  const tagsEl = $('[data-modal-tags]')!;
+  const chips = $('[data-modal-chips]')!;
   const closeBtn = $<HTMLButtonElement>('[data-modal-close]')!;
+  const gunWidget = $('[data-gun-widget]');
 
   let projects: Record<string, ModalProject> = {};
   try {
@@ -85,113 +135,289 @@ function initModal() {
   } catch {}
 
   let cur: ModalProject | null = null;
+  let slides: Slide[] = [];
   let idx = 0;
   let returnFocus: HTMLElement | null = null;
+  // Turntable state: auto-spin timer, whether the user took over, and the active drag.
+  let spin = 0;
+  let touched = false;
+  let drag: { x: number; idx: number } | null = null;
+
+  const watchLoad = (el: HTMLElement, ready: string, failed?: string) => {
+    stage.classList.add('is-loading');
+    stage.classList.remove('is-error');
+    el.addEventListener(ready, () => stage.classList.remove('is-loading'), { once: true });
+    if (failed) el.addEventListener(failed, () => stage.classList.replace('is-loading', 'is-error'), { once: true });
+  };
+
+  // The stage follows the media instead of letterboxing it in 16:9: tall for
+  // portrait, matching proportions for panoramas such as a full shader graph.
+  const fitShape = (w: number, h: number) => {
+    stage.classList.toggle('is-tall', h > w);
+    stage.style.aspectRatio = w / h > 16 / 9 ? `${w} / ${h}` : '';
+  };
 
   const render = () => {
-    if (!cur) return;
-    stage.replaceChildren();
-    // Instagram embeds are portrait, so the stage switches shape for them.
-    stage.classList.toggle('is-ig', !!cur.ig);
-    if (cur.yt || cur.ig) {
-      const f = document.createElement('iframe');
-      f.title = cur.title;
-      f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
-      f.allowFullscreen = true;
-      if (cur.yt) {
-        f.src = `https://www.youtube-nocookie.com/embed/${cur.yt}?autoplay=1&rel=0`;
-        ext.href = `https://www.youtube.com/watch?v=${cur.yt}`;
-        ext.textContent = 'youtube ↗';
-      } else {
-        f.src = `${cur.ig}embed/`;
-        ext.href = cur.ig!;
-        ext.textContent = 'instagram ↗';
-      }
-      stage.append(f);
-      nav.hidden = true;
-      return;
-    }
-    const media = cur.media ?? [];
-    const m = media[idx];
-    if (!m) return;
-    if (m.type === 'video') {
-      const v = document.createElement('video');
-      v.src = m.src;
-      if (m.poster) v.poster = m.poster;
-      v.controls = true;
-      v.autoplay = true;
-      v.playsInline = true;
-      stage.append(v);
+    const s = slides[idx];
+    if (!cur || !s) return;
+    const prev = stage.firstElementChild;
+    // Turntable frames swap the src of the same <img>, so spinning never flashes.
+    if (cur.turntable && prev instanceof HTMLImageElement) {
+      prev.src = s.src;
     } else {
-      const img = document.createElement('img');
-      img.src = m.src;
-      img.alt = m.caption ? `${cur.title} · ${m.caption}` : cur.title;
-      stage.append(img);
+      stage.replaceChildren();
+      stage.classList.remove('is-loading', 'is-error', 'is-tall');
+      stage.style.aspectRatio = '';
+      stage.classList.toggle('is-ig', s.type === 'instagram');
+      if (s.type === 'youtube' || s.type === 'instagram') {
+        const f = document.createElement('iframe');
+        f.title = cur.title;
+        f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+        f.src = s.type === 'youtube' ? `https://www.youtube-nocookie.com/embed/${s.src}?autoplay=1&rel=0` : `${s.src}embed/`;
+        if (s.type === 'instagram') fitShape(9, 16);
+        watchLoad(f, 'load');
+        stage.append(f);
+      } else if (s.type === 'video') {
+        const v = document.createElement('video');
+        v.src = s.src;
+        if (s.poster) v.poster = s.poster;
+        v.controls = true;
+        v.autoplay = true;
+        v.playsInline = true;
+        v.addEventListener('loadedmetadata', () => fitShape(v.videoWidth, v.videoHeight), { once: true });
+        watchLoad(v, 'loadeddata', 'error');
+        stage.append(v);
+      } else {
+        const img = document.createElement('img');
+        img.src = s.src;
+        img.draggable = false;
+        img.addEventListener('load', () => fitShape(img.naturalWidth, img.naturalHeight), { once: true });
+        watchLoad(img, 'load', 'error');
+        stage.append(img);
+      }
     }
-    ext.href = m.src;
-    ext.textContent = 'open ↗';
-    nav.hidden = media.length < 2;
-    caption.textContent = m.caption ?? '';
-    count.textContent = `${pad(idx + 1)}/${pad(media.length)}`;
+    const img = stage.firstElementChild;
+    if (img instanceof HTMLImageElement) img.alt = s.caption ? `${cur.title} · ${s.caption}` : cur.title;
+    ext.href = s.type === 'youtube' ? `https://www.youtube.com/watch?v=${s.src}` : s.src;
+    ext.textContent = s.type === 'youtube' ? 'youtube ↗' : s.type === 'instagram' ? 'instagram ↗' : 'open ↗';
+    nav.hidden = slides.length < 2;
+    caption.textContent = cur.turntable ? 'drag to rotate' : (s.caption ?? '');
+    chips.querySelectorAll('button').forEach((b, i) => b.toggleAttribute('aria-current', i === idx));
+    count.textContent = `${pad(idx + 1)}/${pad(slides.length)}`;
     // Warm up the neighbours so stepping through a sequence feels instant.
     [idx + 1, idx - 1].forEach((k) => {
-      const n = media[(k + media.length) % media.length];
+      const n = slides[(k + slides.length) % slides.length];
       if (n?.type === 'image') new Image().src = n.src;
     });
   };
 
   const step = (dir: number) => {
-    const len = cur?.media?.length ?? 0;
-    if (len < 2) return;
-    idx = (idx + dir + len) % len;
+    if (slides.length < 2) return;
+    idx = (idx + dir + slides.length) % slides.length;
     render();
   };
 
-  const open = (pid: string | undefined) => {
+  const stopSpin = () => {
+    clearInterval(spin);
+    spin = 0;
+  };
+
+  // Any manual step stops the auto-spin for good.
+  const userStep = (dir: number) => {
+    touched = true;
+    stopSpin();
+    step(dir);
+  };
+
+  const go = (i: number) => {
+    idx = i;
+    render();
+  };
+
+  // Short sets (an embed plus its breakdown, a few shots) get a named button per slide.
+  const fillChips = () => {
+    const named = !cur?.turntable && slides.length > 1 && slides.length <= 6;
+    chips.hidden = !named;
+    caption.hidden = named;
+    chips.replaceChildren(
+      ...(named ? slides : []).map((s, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'modal-chip';
+        b.textContent = s.caption ?? pad(i + 1);
+        b.addEventListener('click', () => go(i));
+        return b;
+      }),
+    );
+  };
+
+  const startTurntable = () => {
+    const p = cur;
+    stage.classList.add('is-turntable');
+    // Every frame loads before the spin starts, so it never stalls on the network.
+    const frames = slides.map((s) => {
+      const i = new Image();
+      i.src = s.src;
+      return i.decode().catch(() => {});
+    });
+    if (reduceMotion) return;
+    void Promise.all(frames).then(() => {
+      if (cur === p && !touched) spin = window.setInterval(() => step(1), 90);
+    });
+  };
+
+  stage.addEventListener('pointerdown', (e) => {
+    if (!cur?.turntable) return;
+    e.preventDefault();
+    touched = true;
+    stopSpin();
+    drag = { x: e.clientX, idx };
+    stage.setPointerCapture(e.pointerId);
+  });
+  stage.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const n = slides.length;
+    const next = (((drag.idx + Math.round((e.clientX - drag.x) / 12)) % n) + n) % n;
+    if (next !== idx) {
+      idx = next;
+      render();
+    }
+  });
+  const endDrag = () => (drag = null);
+  stage.addEventListener('pointerup', endDrag);
+  stage.addEventListener('pointercancel', endDrag);
+
+  const fillInfo = (p: ModalProject) => {
+    desc.textContent = p.desc;
+    linksEl.replaceChildren(
+      ...(p.links ?? []).map((l) => {
+        const a = document.createElement('a');
+        a.className = 'btn btn-secondary';
+        a.href = l.href;
+        a.target = '_blank';
+        a.rel = 'noreferrer';
+        const arrow = document.createElement('span');
+        arrow.textContent = '↗';
+        arrow.setAttribute('aria-hidden', 'true');
+        a.append(`${l.label} `, arrow);
+        return a;
+      }),
+    );
+    linksEl.hidden = !p.links?.length;
+    tagsEl.replaceChildren(
+      ...p.tags.map((t) => {
+        const li = document.createElement('li');
+        li.className = 'tag';
+        li.textContent = t;
+        return li;
+      }),
+    );
+  };
+
+  const open = (pid: string | undefined, at = 0) => {
     if (isArmed() || !pid || !projects[pid]) return;
     cur = projects[pid];
-    idx = 0;
+    slides = slidesOf(cur);
+    idx = Math.min(at, slides.length - 1);
+    touched = false;
     title.textContent = cur.title;
-    returnFocus = document.activeElement as HTMLElement | null;
+    fillInfo(cur);
+    fillChips();
+    const active = document.activeElement as HTMLElement | null;
+    returnFocus = active && active !== document.body ? active : $(`#${pid} [data-card-open]`);
     modal.hidden = false;
+    // Everything behind the dialog drops out of focus order and stops scrolling.
+    page.inert = true;
+    if (gunWidget) gunWidget.inert = true;
+    html.style.overflow = 'hidden';
+    // The URL now points at this project, so it can be copied and shared.
+    history.replaceState(null, '', `#${pid}`);
     render();
+    if (cur.turntable) startTurntable();
     closeBtn.focus();
   };
 
   const close = () => {
     if (!cur) return;
     cur = null;
+    stopSpin();
+    drag = null;
     modal.hidden = true;
     stage.replaceChildren();
+    stage.classList.remove('is-loading', 'is-error', 'is-tall', 'is-ig', 'is-turntable');
+    stage.style.aspectRatio = '';
+    page.inert = false;
+    if (gunWidget) gunWidget.inert = false;
+    html.style.overflow = '';
+    history.replaceState(null, '', location.pathname + location.search);
     returnFocus?.focus();
   };
 
+  // The thumbnail is the focusable button; the rest of the card is a larger mouse target.
   document.querySelectorAll<HTMLElement>('[data-card]').forEach((card) => {
     card.addEventListener('click', (e) => {
-      if ((e.target as Element).closest('a')) return;
-      open(card.dataset.pid);
-    });
-    const thumb = $('[data-card-open]', card);
-    thumb?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        open(card.dataset.pid);
-      }
+      const target = e.target as Element;
+      if (target.closest('a')) return;
+      // "breakdown ›" opens straight on the breakdown slide.
+      open(card.dataset.pid, Number(target.closest<HTMLElement>('[data-open-at]')?.dataset.openAt) || 0);
     });
   });
+
+  // A shared link like /#samurai opens that project straight away.
+  const openFromHash = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!projects[id] || cur === projects[id]) return;
+    close();
+    open(id);
+  };
+  openFromHash();
+  window.addEventListener('hashchange', openFromHash);
 
   modal.addEventListener('click', (e) => {
     if (e.target === modal) close();
   });
   closeBtn.addEventListener('click', close);
-  $('[data-modal-prev]')?.addEventListener('click', () => step(-1));
-  $('[data-modal-next]')?.addEventListener('click', () => step(1));
+  $('[data-modal-prev]')?.addEventListener('click', () => userStep(-1));
+  $('[data-modal-next]')?.addEventListener('click', () => userStep(1));
   window.addEventListener('keydown', (e) => {
     if (!cur) return;
     if (e.key === 'Escape') close();
-    else if (e.key === 'ArrowLeft') step(-1);
-    else if (e.key === 'ArrowRight') step(1);
+    else if (e.key === 'ArrowLeft') userStep(-1);
+    else if (e.key === 'ArrowRight') userStep(1);
   });
+}
+
+/* ---------- card previews ---------- */
+
+/** Muted loops on cards: on hover with a mouse, while mostly on screen on touch devices. */
+function initPreviews() {
+  const vids = [...document.querySelectorAll<HTMLVideoElement>('[data-preview]')];
+  if (!vids.length || reduceMotion) return;
+  const play = (v: HTMLVideoElement) => {
+    v.play()
+      .then(() => v.classList.add('is-playing'))
+      .catch(() => {});
+  };
+  const stop = (v: HTMLVideoElement) => {
+    v.pause();
+    v.classList.remove('is-playing');
+  };
+  if (matchMedia('(hover: hover)').matches) {
+    vids.forEach((v) => {
+      const card = v.closest('[data-card]');
+      card?.addEventListener('pointerenter', () => play(v));
+      card?.addEventListener('pointerleave', () => stop(v));
+      card?.addEventListener('focusin', () => play(v));
+      card?.addEventListener('focusout', () => stop(v));
+    });
+    return;
+  }
+  if ((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) return;
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => (e.isIntersecting ? play : stop)(e.target as HTMLVideoElement)),
+    { threshold: 0.6 },
+  );
+  vids.forEach((v) => io.observe(v));
 }
 
 /* ---------- background grid shader ---------- */
@@ -224,9 +450,13 @@ function initGrid(hue: number) {
   let dpr = 1;
   const resize = () => {
     dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    cv.width = Math.round(innerWidth * dpr);
-    cv.height = Math.round(innerHeight * dpr);
-    gl.viewport(0, 0, cv.width, cv.height);
+    const w = Math.round(cv.clientWidth * dpr);
+    const h = Math.round(cv.clientHeight * dpr);
+    // Mobile toolbars fire resize while scrolling; touching the buffer would blank a frame.
+    if (w === cv.width && h === cv.height) return;
+    cv.width = w;
+    cv.height = h;
+    gl.viewport(0, 0, w, h);
   };
   resize();
   window.addEventListener('resize', resize);
@@ -234,25 +464,46 @@ function initGrid(hue: number) {
   const m = { x: innerWidth * 0.7, y: innerHeight * 0.4 };
   const s = { ...m };
   const t = { ...m };
+
+  // With a mouse the glow follows the cursor. On touch screens it follows the finger
+  // while touching (scrolling included) and otherwise drifts on its own, so its hue
+  // keeps shifting instead of sitting on one color. The input type decides, not a
+  // media query, since some phones misreport hover.
+  let touch = matchMedia('(hover: none)').matches;
+  let lastTouch = -Infinity;
   window.addEventListener(
     'pointermove',
     (e) => {
+      if (e.pointerType === 'touch') return;
+      touch = false;
       m.x = e.clientX;
       m.y = e.clientY;
     },
     { passive: true },
   );
+  const onTouch = (e: TouchEvent) => {
+    const p = e.touches[0];
+    if (!p) return;
+    touch = true;
+    lastTouch = performance.now();
+    m.x = p.clientX;
+    m.y = p.clientY;
+  };
+  window.addEventListener('touchstart', onTouch, { passive: true });
+  window.addEventListener('touchmove', onTouch, { passive: true });
 
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const coord = $('[data-hud-coord]');
-  const hueEl = $('[data-hud-hue]');
   const t0 = performance.now();
   let light = isLight() ? 1 : 0;
-  let lastHud = 0;
 
   const frame = (now: number) => {
     requestAnimationFrame(frame);
     if (document.hidden) return;
+    // A second after the finger lifts, glide back onto the drift path.
+    if (touch && !reduceMotion && now - lastTouch > 1000) {
+      const k = (now - t0) / 1000;
+      m.x += (innerWidth * (0.5 + 0.4 * Math.sin(k * 0.23)) - m.x) * 0.03;
+      m.y += (innerHeight * (0.5 + 0.4 * Math.sin(k * 0.17 + 1.3)) - m.y) * 0.03;
+    }
     s.x += (m.x - s.x) * 0.25;
     s.y += (m.y - s.y) * 0.25;
     t.x += (m.x - t.x) * 0.05;
@@ -264,16 +515,11 @@ function initGrid(hue: number) {
     gl.uniform1f(U.uTime, (now - t0) / 1000);
     gl.uniform1f(U.uCell, CELL_SIZE * dpr);
     gl.uniform1f(U.uHue, hue);
-    gl.uniform1f(U.uInt, INTENSITY);
+    gl.uniform1f(U.uInt, touch ? INTENSITY * 0.6 : INTENSITY);
     gl.uniform1f(U.uPx, dpr);
     gl.uniform1f(U.uLight, light);
-    gl.uniform1f(U.uFlick, FLICKER && !reduce ? 1 : 0);
+    gl.uniform1f(U.uFlick, FLICKER && !reduceMotion ? 1 : 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-    if (now - lastHud > 80) {
-      lastHud = now;
-      if (coord) coord.textContent = `${pad(Math.round(m.x), 4)},${pad(Math.round(m.y), 4)}`;
-      if (hueEl) hueEl.textContent = pad(Math.round(((hue + (m.x / innerWidth) * 0.3 + (m.y / innerHeight) * 0.12) % 1) * 360), 3);
-    }
   };
   requestAnimationFrame(frame);
 }
